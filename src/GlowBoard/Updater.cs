@@ -52,10 +52,11 @@ namespace GlowBoard
                 var latest = ParseVersion(json.TryGetValue("tag_name", out var t) ? t as string : null);
                 if (latest == null || latest <= CurrentVersion) return null;
 
-                var asset = (json.TryGetValue("assets", out var a) ? a as object[] : null)?
+                // JavaScriptSerializer trả mảng JSON về dạng ArrayList (không phải object[]), nên đọc qua IEnumerable
+                var asset = (json.TryGetValue("assets", out var a) ? a as System.Collections.IEnumerable : null)?
                     .OfType<Dictionary<string, object>>()
-                    .FirstOrDefault(x => (x["name"] as string) == AssetName);
-                if (asset == null) return null;
+                    .FirstOrDefault(x => x.TryGetValue("name", out var n) && (n as string) == AssetName);
+                if (asset == null) throw new Exception("Bản v" + latest + " chưa có file cài đặt trên GitHub.");
 
                 // Tải file zip
                 var zip = await api.GetByteArrayAsync((string)asset["browser_download_url"]).ConfigureAwait(false);
