@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>GlowBoard</AssemblyName>
+    <RootNamespace>GlowBoard</RootNamespace>
+    <ApplicationIcon>Assets\GlowBoard.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Company>Mondiro</Company>
+    <Product>Mondiro GlowBoard</Product>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Copyright>Created by Mondiro</Copyright>
+    <AssemblyTitle>Mondiro GlowBoard</AssemblyTitle>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
+    <EmbeddedResource Include="Web\index.html" LogicalName="GlowBoard.index.html" />
+    <EmbeddedResource Include="Assets\GlowBoard.ico" LogicalName="GlowBoard.icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <!-- Gọn thư mục chạy: đặt WebView2Loader.dll cạnh exe, bỏ thư viện WPF không dùng -->
+  <Target Name="TidyOutput" AfterTargets="Build">
+    <Copy SourceFiles="$(OutDir)runtimes\win-x64\native\WebView2Loader.dll" DestinationFolder="$(OutDir)" Condition="Exists('$(OutDir)runtimes\win-x64\native\WebView2Loader.dll')" />
+    <Delete Files="$(OutDir)Microsoft.Web.WebView2.Wpf.dll" />
+  </Target>
+</Project>
