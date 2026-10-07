@@ -43,9 +43,15 @@ namespace GlowBoard
         private bool _pageLoaded;
         private bool _dialogOpen;
 
-        public MainForm(string startupFile)
+        private readonly Updater _updater = new Updater();
+        private readonly Timer _updateTimer = new Timer();
+        private readonly bool _justUpdated;
+        private bool _checking;
+
+        public MainForm(string startupFile, bool justUpdated)
         {
             _startupFile = startupFile;
+            _justUpdated = justUpdated;
             _settings = Settings.Load(Path.Combine(DataDir, "settings.ini"));
 
             Text = AppTitle;
@@ -69,6 +75,17 @@ namespace GlowBoard
             _tray.MouseClick += (s, e) => { if (e.Button == MouseButtons.Left) ShowBoard(); };
 
             ResizeEnd += (s, e) => SaveBounds();
+
+            // Kiểm tra bản mới: 30 giây sau khi mở, sau đó mỗi 2 giờ.
+            // Có bản mới thì tải sẵn, đợi lúc bạn không dùng board mới khởi động lại.
+            _updateTimer.Interval = 30 * 1000;
+            _updateTimer.Tick += async (s, e) =>
+            {
+                if (_updater.StagedVersion != null) { await TryApplyUpdateAsync(); return; }
+                _updateTimer.Interval = 2 * 60 * 60 * 1000;
+                await CheckUpdateAsync(false);
+            };
+            if (_updater.Enabled) _updateTimer.Start();
         }
 
         private int Scale(int px) => (int)Math.Round(px * DeviceDpi / 96.0);
@@ -122,7 +139,9 @@ namespace GlowBoard
             _autoStartItem = new ToolStripMenuItem("Khởi động cùng Windows", null, (s, e) => ToggleAutoStart()) { Checked = IsAutoStart() };
             m.Items.Add(_autoStartItem);
             m.Items.Add("Đưa board về vị trí mặc định", null, (s, e) => { Bounds = DefaultBounds(); SaveBounds(); ShowBoard(); });
+            m.Items.Add("Kiểm tra cập nhật", null, async (s, e) => await CheckUpdateAsync(true));
             m.Items.Add(new ToolStripSeparator());
+            m.Items.Add(new ToolStripMenuItem("GlowBoard v" + Updater.CurrentVersion) { Enabled = false });
             m.Items.Add("Thoát", null, async (s, e) => await QuitAsync());
             m.Opening += (s, e) => _autoStartItem.Checked = IsAutoStart();
             return m;
@@ -209,6 +228,57 @@ namespace GlowBoard
             if (_peek && !_dialogOpen) { _peek = false; SendToBottom(); }
         }
 
+        // ================= Tự cập nhật =================
+        private async Task CheckUpdateAsync(bool manual)
+        {
+            if (_checking) return;
+            if (!_updater.Enabled)
+            {
+                if (manual) _tray.ShowBalloonTip(4000, AppTitle, "Bản app này chưa được gắn token cập nhật. Hãy tải bản mới nhất từ trang Releases trên GitHub.", ToolTipIcon.Warning);
+                return;
+            }
+            _checking = true;
+            try
+            {
+                var v = await _updater.CheckAndStageAsync();
+                if (v == null)
+                {
+                    if (manual) _tray.ShowBalloonTip(3000, AppTitle, "Bạn đang dùng bản mới nhất (v" + Updater.CurrentVersion + ").", ToolTipIcon.Info);
+                    return;
+                }
+                _updateTimer.Interval = 30 * 1000;   // đã tải xong, đợi lúc thích hợp để cài
+                _updateTimer.Start();
+                if (manual) await TryApplyUpdateAsync(true);
+            }
+            catch (Exception ex)
+            {
+                if (manual) _tray.ShowBalloonTip(4000, AppTitle, "Không kiểm tra được cập nhật: " + ex.Message, ToolTipIcon.Warning);
+            }
+            finally { _checking = false; }
+        }
+
+        /// <summary>Cài bản mới khi board đang ẩn hoặc bạn không thao tác trên board (hoặc ngay lập tức nếu bạn bấm Kiểm tra cập nhật).</summary>
+        private async Task TryApplyUpdateAsync(bool now = false)
+        {
+            if (_updater.StagedVersion == null || _quitting || _dialogOpen) return;
+            if (!now && Visible && ContainsFocus) return;
+            try
+            {
+                await SaveBoardNowAsync();
+                _updater.Apply();
+            }
+            catch (Exception ex)
+            {
+                _tray.ShowBalloonTip(5000, AppTitle, "Không cài được bản cập nhật (" + ex.Message + "). Hãy giải nén GlowBoard vào thư mục không cần quyền admin, ví dụ D:\\Apps\\GlowBoard.", ToolTipIcon.Warning);
+                _updateTimer.Stop();
+                return;
+            }
+            SaveBounds();
+            Process.Start(new ProcessStartInfo(Application.ExecutablePath, "--updated --wait " + Process.GetCurrentProcess().Id) { UseShellExecute = false });
+            _quitting = true;
+            Close();
+        }
+
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == NativeMethods.WM_SHOWME)
@@ -257,18 +327,18 @@ namespace GlowBoard
 
         private async Task QuitAsync()
         {
-            try
-            {
-                if (_pageLoaded)
-                {
-                    string r = await _web.CoreWebView2.ExecuteScriptAsync("serialize()");
-                    var text = _json.Deserialize<string>(r);
-                    if (!string.IsNullOrEmpty(text)) WriteBoard(_currentFile ?? DefaultBoardPath, text);
-                }
-            }
+            try { await SaveBoardNowAsync(); }
             catch { /* vẫn thoát được dù không lưu kịp */ }
             _quitting = true;
             Close();
+        }
+
+        private async Task SaveBoardNowAsync()
+        {
+            if (!_pageLoaded) return;
+            string r = await _web.CoreWebView2.ExecuteScriptAsync("serialize()");
+            var text = _json.Deserialize<string>(r);
+            if (!string.IsNullOrEmpty(text)) WriteBoard(_currentFile ?? DefaultBoardPath, text);
         }
 
         // ================= WebView2 =================
@@ -334,7 +404,10 @@ namespace GlowBoard
 
             switch (Str("type"))
             {
-                case "ready": LoadInitialBoard(); break;
+                case "ready":
+                    LoadInitialBoard();
+                    if (_justUpdated) Post(new { type = "toast", message = "Đã cập nhật GlowBoard lên v" + Updater.CurrentVersion });
+                    break;
                 case "autosave": TryWrite(_currentFile ?? DefaultBoardPath, Str("text")); break;
                 case "save": SaveBoard(Str("text"), msg.TryGetValue("as", out var a) && a is bool b && b); break;
                 case "open": OpenBoard(); break;
@@ -512,7 +585,7 @@ namespace GlowBoard
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) { _tray?.Dispose(); _web?.Dispose(); }
+            if (disposing) { _updateTimer.Dispose(); _tray?.Dispose(); _web?.Dispose(); }
             base.Dispose(disposing);
         }
     }

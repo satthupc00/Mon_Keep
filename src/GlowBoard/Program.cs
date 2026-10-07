@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -9,6 +11,15 @@ namespace GlowBoard
         [STAThread]
         private static void Main(string[] args)
         {
+            // Sau khi tự cập nhật: chờ bản cũ thoát hẳn rồi mới chạy
+            int waitIdx = Array.IndexOf(args, "--wait");
+            if (waitIdx >= 0 && waitIdx + 1 < args.Length && int.TryParse(args[waitIdx + 1], out int pid))
+            {
+                try { Process.GetProcessById(pid).WaitForExit(15000); } catch { /* đã thoát */ }
+            }
+            bool updated = args.Contains("--updated");
+            string file = args.Where((a, i) => !a.StartsWith("--") && (i == 0 || args[i - 1] != "--wait")).FirstOrDefault();
+
             // Chỉ cho chạy 1 bản GlowBoard cùng lúc
             using (var mutex = new Mutex(true, "Mondiro.GlowBoard.SingleInstance", out bool first))
             {
@@ -18,9 +29,10 @@ namespace GlowBoard
                     return;
                 }
 
+                Updater.CleanupOldFiles();
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new MainForm(args.Length > 0 ? args[0] : null));
+                Application.Run(new MainForm(file, updated));
             }
         }
     }
