@@ -14,12 +14,12 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 ## Cách dùng
 | Thao tác | Cách làm |
 |---|---|
-| Bật / tắt đầu mục | Click vào chấm tròn (xanh lá = bật, trắng xám = tắt) |
+| Bật / tắt đầu mục | Click vào chấm tròn (xanh lá nhấp nháy = bật, xám = tắt, chữ cũng chuyển xám) |
 | Đổi thứ tự | Nhấn giữ vào dòng rồi kéo lên/xuống (dòng đang gõ chữ: giữ ~0.3 giây rồi kéo) |
-| Gõ chữ | Click vào dòng. Đầu mục luôn in đậm, mục con chữ thường |
-| Thêm / xoá dòng | Rê chuột vào dòng → nút **+** / **−** ở cuối dòng (xoá sẽ hỏi lại) |
-| Thêm mục con | Nút **↳** trên dòng, hoặc **Mục con ▾** trên thanh công cụ → chọn loại có ô check hoặc thường |
-| Chèn link | Bôi đen chữ → `Ctrl+K` (web hoặc đường dẫn thư mục trên máy). `Ctrl+Click` để mở |
+| Gõ chữ | Click vào dòng. Đầu mục in đậm màu xanh dạ quang, mục con chữ trắng thường |
+| Thêm / xoá dòng | Rê chuột vào dòng → nút **+** / **−** ở cuối dòng (xoá sẽ hỏi lại). Board trống: nút **＋ Thêm đầu mục** |
+| Thêm mục con (có ô check) | Nút **↳** ở cuối dòng đầu mục |
+| Chèn link | Bôi đen chữ → `Ctrl+K` (web hoặc đường dẫn thư mục trên máy). **Double click** vào link để mở |
 | Dòng mới | `Enter` · xuống dòng trong cùng mục: `Shift+Enter` |
 | Đổi cấp | `Tab`: đầu mục → mục con · `Shift+Tab`: mục con → đầu mục |
 | Lưu / Mở / Mới | `Ctrl+S` (`Ctrl+Shift+S` = Lưu thành…) · `Ctrl+O` · `Ctrl+N` |

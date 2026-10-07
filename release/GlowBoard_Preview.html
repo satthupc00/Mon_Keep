@@ -41,9 +41,6 @@
   .ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .ib.icon{padding:0;width:26px}
 
-  .tools{display:flex;gap:4px;padding:6px 10px;background:var(--tool);border-bottom:1px solid var(--line);flex:none;align-items:center;flex-wrap:wrap}
-  .tools .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
-  .tools .sp{flex:1}
   .ib b{font-size:13px}
 
   /* ---------- canvas ---------- */
@@ -57,17 +54,17 @@
   .row{position:relative;display:flex;align-items:flex-start;gap:10px;padding:5px 8px;border-radius:7px}
   .dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:6px;cursor:pointer}
   .dot.on{background:var(--neon);animation:pulseOn 2.4s ease-in-out infinite}
-  .dot.off{background:var(--off);animation:pulseOff 3s ease-in-out infinite}
+  .dot.off{background:var(--off-dark)}
   @keyframes pulseOn{0%,100%{background:var(--neon)}50%{background:var(--neon-dark)}}
-  @keyframes pulseOff{0%,100%{background:var(--off)}50%{background:var(--off-dark)}}
   .txt{flex:1;min-width:0;margin-right:74px;outline:none;line-height:22px;min-height:22px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text;cursor:text}
   .txt:empty::before{content:attr(data-ph);color:rgba(255,255,255,.3)}
-  .group>.row .txt{font-weight:700}
+  .group>.row .txt{font-weight:700;color:var(--neon);transition:color .3s}
+  .group>.row.off .txt{color:var(--off-dark)}
   .children .row .txt{font-weight:400}
-  .txt a{color:var(--neon);text-decoration:underline;text-decoration-color:rgba(57,255,122,.45);text-underline-offset:2px;cursor:pointer}
-  .ctrl .txt a{cursor:pointer}
+  .txt a{color:var(--neon);text-decoration:underline;text-decoration-color:rgba(57,255,122,.45);text-underline-offset:2px}
+  .group>.row.off .txt a{color:inherit;text-decoration-color:rgba(158,162,172,.5)}
   /* nút + − nằm đè ở cuối dòng (không làm chữ nhảy dòng), ẩn và hiện dần khi rê chuột */
-  .acts{position:absolute;right:6px;top:6px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .25s ease}
+  .acts{position:absolute;right:6px;top:6px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .5s ease}
   .children .acts{top:5px}
   .row:hover>.acts{opacity:1;pointer-events:auto}
   .ab{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;line-height:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);transition:background .2s,color .2s}
@@ -76,7 +73,6 @@
 
   .children .row{padding-left:36px;gap:8px;font-size:13px;color:var(--sub)}
   .children .txt{line-height:20px;min-height:20px;margin-right:50px}
-  .bul{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);flex:none;margin:8px 4px 0}
   .chk{width:14px;height:14px;border:1.5px solid rgba(255,255,255,.55);border-radius:3px;flex:none;margin-top:3px;display:grid;place-items:center;cursor:pointer}
   .chk svg{width:10px;height:10px;stroke:#0d2d18;stroke-width:3;fill:none;display:none}
   .chk.ok{background:var(--neon);border-color:var(--neon)}
@@ -90,6 +86,7 @@
   .settle{transition:transform .2s cubic-bezier(.2,.7,.3,1),box-shadow .2s}
 
   .empty{color:rgba(255,255,255,.4);text-align:center;margin-top:40px;font-size:13px;line-height:1.7}
+  .empty .ib{margin-top:10px;height:30px;padding:0 14px}
 
 
   /* ---------- popups ---------- */
@@ -105,10 +102,6 @@
   .dlg .bt .primary{background:#2f8a50;color:#fff}
   .dlg input{width:100%;background:#2b2d33;border:1px solid #5a5e68;color:#fff;border-radius:6px;padding:7px 8px;font-size:12.5px;margin-bottom:12px;outline:none;-webkit-user-select:text;user-select:text}
   .dlg input:focus{border-color:var(--neon)}
-  .menu{position:fixed;display:none;background:#363940;border:1px solid #5a5e68;border-radius:8px;padding:4px;z-index:40;box-shadow:0 10px 24px rgba(0,0,0,.4);min-width:170px}
-  .menu.show{display:block}
-  .menu button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:6px 10px;border-radius:5px;font-size:12.5px}
-  .menu button:hover{background:var(--btn-h)}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);background:#2b2d33;border:1px solid #5a5e68;padding:6px 12px;border-radius:7px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;z-index:60;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%)}
   .tip{position:fixed;background:#2b2d33;border:1px solid #5a5e68;color:#dfe1e5;font-size:11px;padding:4px 7px;border-radius:5px;pointer-events:none;z-index:45;display:none;max-width:320px;word-break:break-all}
@@ -135,29 +128,16 @@
     </div>
   </header>
 
-  <div class="tools">
-    <button class="ib" id="tLink" title="Chèn link (Ctrl+K)"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Link</button>
-    <span class="sep"></span>
-    <button class="ib" id="tAdd" title="Thêm đầu mục ở cuối"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Đầu mục</button>
-    <button class="ib" id="tKid" title="Thêm mục con cho đầu mục đang chọn"><svg viewBox="0 0 24 24"><path d="M6 4v9a3 3 0 0 0 3 3h10M15 12l4 4-4 4"/></svg>Mục con ▾</button>
-    <span class="sp"></span>
-  </div>
-
   <main class="canvas">
     <div class="wm">Mondiro</div>
     <div class="scroll" id="scroll">
       <ul id="list"></ul>
-      <div class="empty" id="empty" hidden>Board đang trống<br>Bấm <b>＋ Đầu mục</b> để bắt đầu</div>
+      <div class="empty" id="empty" hidden>Board đang trống<br><button class="ib" id="emptyAdd">＋ Thêm đầu mục</button></div>
     </div>
   </main>
 
 </div>
 
-<!-- menu chọn loại mục con -->
-<div class="menu" id="kidMenu">
-  <button data-kind="check"><span style="display:inline-grid;place-items:center;width:13px;height:13px;border:1.5px solid #ccc;border-radius:3px"></span>Mục con có ô check</button>
-  <button data-kind="plain"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#ccc;margin:0 4px"></span>Mục con thường</button>
-</div>
 
 <!-- hộp thoại dùng chung -->
 <div class="veil" id="veil"><div class="dlg" id="dlg"></div></div>
@@ -178,21 +158,20 @@ function send(type, data) {
 const FILE_APP = "Mondiro GlowBoard";
 let doc = { items: [] };
 let fileName = null;          // tên file đang mở (null = board chưa lưu thành file)
-let lastKidKind = "check";
 let uid = 0;
 const newId = () => "n" + Date.now().toString(36) + (uid++).toString(36);
 
 function sampleDoc() {
   const it = (html, enabled, children) => ({ id: newId(), html, enabled, children: children || [] });
-  const ch = (html, kind, checked) => ({ id: newId(), html, kind, checked: !!checked });
+  const ch = (html, checked) => ({ id: newId(), html, checked: !!checked });
   return { items: [
     it("Chào mừng đến với GlowBoard", true, [
-      ch("Click vào chấm tròn để bật / tắt đầu mục", "check", true),
-      ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự", "check"),
-      ch("Rê chuột vào dòng để thấy nút ＋ / −", "plain"),
+      ch("Click vào chấm tròn để bật / tắt đầu mục", true),
+      ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự"),
+      ch("Rê chuột vào dòng để thấy nút ↳ ＋ −"),
     ]),
     it("Bôi đen chữ rồi bấm Ctrl+K để chèn link", false, [
-      ch("Ctrl + Click vào chữ xanh để mở link", "plain"),
+      ch("Double click vào link để mở"),
     ]),
     it("Kéo các cạnh cửa sổ để mở rộng board", false),
   ]};
@@ -237,14 +216,14 @@ function normalizeDoc(raw) {
   return { items: raw.items.map(i => ({
     id: newId(), html: sanitize(String(i.html || "")), enabled: !!i.enabled,
     children: (Array.isArray(i.children) ? i.children : []).map(c => ({
-      id: newId(), html: sanitize(String(c.html || "")), kind: c.kind === "plain" ? "plain" : "check", checked: !!c.checked,
+      id: newId(), html: sanitize(String(c.html || "")), checked: !!c.checked,
     })),
   }))};
 }
 function serialize() {
   return JSON.stringify({ app: FILE_APP, version: 1, items: doc.items.map(i => ({
     html: i.html, enabled: i.enabled,
-    children: i.children.map(c => ({ html: c.html, kind: c.kind, checked: c.checked })),
+    children: i.children.map(c => ({ html: c.html, checked: c.checked })),
   }))}, null, 1);
 }
 
@@ -277,7 +256,7 @@ const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></s
 
 function rowHtml(node, isKid) {
   const lead = isKid
-    ? (node.kind === "check" ? `<span class="chk${node.checked ? " ok" : ""}" data-act="check">${CHECK_SVG}</span>` : `<span class="bul"></span>`)
+    ? `<span class="chk${node.checked ? " ok" : ""}" data-act="check">${CHECK_SVG}</span>`
     : `<span class="dot ${node.enabled ? "on" : "off"}" data-act="dot" title="Bật / tắt"></span>`;
   const acts = isKid
     ? `<button class="ab add" data-act="add" title="Thêm mục con bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`
@@ -286,7 +265,7 @@ function rowHtml(node, isKid) {
 }
 function makeRow(node, isKid, tag) {
   const el = document.createElement(tag);
-  el.className = "row" + (isKid ? " kid" : "") + (isKid && node.kind === "check" && node.checked ? " done" : "");
+  el.className = "row" + (isKid ? " kid" : node.enabled ? "" : " off") + (isKid && node.checked ? " done" : "");
   el.dataset.id = node.id;
   el.innerHTML = rowHtml(node, isKid);
   el.querySelector(".txt").innerHTML = node.html;
@@ -327,10 +306,9 @@ function addItemAfter(id) {
   else { const f = find(id); doc.items.splice((f.parent ? doc.items.indexOf(f.parent) : f.index) + 1, 0, n); }
   render(); changed(); focusRow(n.id);
 }
-function addKid(parentId, kind, afterId) {
+function addKid(parentId, afterId) {
   const p = find(parentId).node;
-  const n = { id: newId(), html: "", kind: kind || lastKidKind, checked: false };
-  lastKidKind = n.kind;
+  const n = { id: newId(), html: "", checked: false };
   if (afterId) { const f = find(afterId); p.children.splice(f.index + 1, 0, n); }
   else p.children.push(n);
   render(); changed(); focusRow(n.id);
@@ -367,11 +345,11 @@ listEl.addEventListener("click", e => {
   const a = e.target.closest("[data-act]"); if (!a) return;
   const row = a.closest(".row"), id = row.dataset.id, f = find(id);
   switch (a.dataset.act) {
-    case "dot": f.node.enabled = !f.node.enabled; a.className = "dot " + (f.node.enabled ? "on" : "off"); changed(); break;
+    case "dot": f.node.enabled = !f.node.enabled; a.className = "dot " + (f.node.enabled ? "on" : "off"); row.classList.toggle("off", !f.node.enabled); changed(); break;
     case "check": f.node.checked = !f.node.checked; a.classList.toggle("ok", f.node.checked); row.classList.toggle("done", f.node.checked); changed(); break;
-    case "add": f.parent ? addKid(f.parent.id, f.node.kind, id) : addItemAfter(id); break;
+    case "add": f.parent ? addKid(f.parent.id, id) : addItemAfter(id); break;
     case "del": askDelete(id); break;
-    case "kid": openKidMenu(a, id); break;
+    case "kid": addKid(id); break;
   }
 });
 listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.chk")) e.preventDefault(); });
@@ -395,7 +373,7 @@ listEl.addEventListener("keydown", e => {
   const row = t.closest(".row"), id = row.dataset.id, f = find(id);
   if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
     e.preventDefault();
-    f.parent ? addKid(f.parent.id, f.node.kind, id) : addItemAfter(id);
+    f.parent ? addKid(f.parent.id, id) : addItemAfter(id);
   } else if (e.key === "Enter" && e.shiftKey) {
     e.preventDefault(); document.execCommand("insertLineBreak");
   } else if (e.key === "Backspace" && t.textContent === "" && !(f.node.children && f.node.children.length)) {
@@ -408,7 +386,7 @@ listEl.addEventListener("keydown", e => {
       // biến đầu mục thành mục con của đầu mục phía trên
       const above = doc.items[f.index - 1];
       doc.items.splice(f.index, 1);
-      const n = { id: f.node.id, html: f.node.html, kind: lastKidKind, checked: false };
+      const n = { id: f.node.id, html: f.node.html, checked: false };
       above.children.push(n); render(); changed(); focusRow(n.id, true);
     } else if (e.shiftKey && f.parent) {
       // đưa mục con ra ngoài thành đầu mục
@@ -429,25 +407,28 @@ function caretAtEdge(el, top) {
   return top ? r.top - b.top < 12 : b.bottom - r.bottom < 12;
 }
 
-/* ---- link: Ctrl + Click để mở, rê chuột để xem địa chỉ ---- */
+/* ---- link: double click để mở; bôi đen chữ thì hiện gợi ý Ctrl+K ---- */
 const tip = $("#tip");
-listEl.addEventListener("click", e => {
+listEl.addEventListener("click", e => { if (e.target.closest(".txt a")) e.preventDefault(); });
+listEl.addEventListener("dblclick", e => {
   const a = e.target.closest(".txt a"); if (!a) return;
-  if (e.ctrlKey) { e.preventDefault(); send("openLink", { url: a.getAttribute("href") }); }
-  else e.preventDefault();
+  e.preventDefault();
+  getSelection().collapseToEnd();
+  send("openLink", { url: a.getAttribute("href") });
 });
-listEl.addEventListener("mouseover", e => {
-  const a = e.target.closest(".txt a");
-  if (!a) { tip.style.display = "none"; return; }
-  tip.textContent = a.getAttribute("href") + "  ·  Ctrl+Click để mở";
-  const r = a.getBoundingClientRect();
-  tip.style.display = "block";
-  tip.style.left = Math.max(4, Math.min(r.left, innerWidth - tip.offsetWidth - 4)) + "px";
-  tip.style.top = (r.bottom + 6 + tip.offsetHeight > innerHeight ? r.top - tip.offsetHeight - 6 : r.bottom + 6) + "px";
+let tipT = 0;
+document.addEventListener("selectionchange", () => {
+  clearTimeout(tipT);
+  tipT = setTimeout(() => {
+    const sel = getSelection();
+    if (drag || !sel.rangeCount || sel.isCollapsed || !inEditor() || veil.classList.contains("show")) { tip.style.display = "none"; return; }
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    tip.textContent = "Ctrl+K để chèn link";
+    tip.style.display = "block";
+    tip.style.left = Math.max(4, Math.min(r.left + r.width / 2 - tip.offsetWidth / 2, innerWidth - tip.offsetWidth - 4)) + "px";
+    tip.style.top = (r.top - tip.offsetHeight - 6 < 0 ? r.bottom + 6 : r.top - tip.offsetHeight - 6) + "px";
+  }, 250);
 });
-listEl.addEventListener("mouseleave", () => tip.style.display = "none");
-document.addEventListener("keydown", e => document.body.classList.toggle("ctrl", e.ctrlKey));
-document.addEventListener("keyup", e => document.body.classList.toggle("ctrl", e.ctrlKey));
 
 /* ================= Giữ & kéo để sắp xếp ================= */
 /* Dòng chưa được chọn: nhấn giữ rồi kéo là di chuyển ngay; click nhả ra là để gõ chữ.
@@ -478,7 +459,7 @@ window.addEventListener("pointermove", e => {
 });
 window.addEventListener("pointerup", e => {
   cancelHold();
-  if (press) { const p = press; press = null; if (!e.ctrlKey || !e.target.closest("a")) placeCaret(p.txt, e.clientX, e.clientY); }
+  if (press) { const p = press; press = null; placeCaret(p.txt, e.clientX, e.clientY); }
   if (drag) endDrag();
 });
 window.addEventListener("pointercancel", () => { cancelHold(); press = null; if (drag) endDrag(); });
@@ -567,39 +548,8 @@ function endDrag() {
 }
 
 /* ================= Thanh công cụ ================= */
-let lastRowId = null;   // dòng được chọn gần nhất (để toolbar biết thêm mục con vào đâu)
-document.addEventListener("focusin", e => { const r = e.target.closest && e.target.closest(".row"); if (r) lastRowId = r.dataset.id; });
-document.querySelectorAll(".tools .ib, .head .ib").forEach(b => b.addEventListener("mousedown", e => e.preventDefault()));
-
-$("#tLink").onclick = () => openLinkDialog();
-$("#tAdd").onclick = () => addItemAfter(null);
-$("#tKid").onclick = e => {
-  let pid = null;
-  const f = lastRowId && find(lastRowId);
-  if (f) pid = f.parent ? f.parent.id : f.node.id;
-  else if (doc.items.length) pid = doc.items[doc.items.length - 1].id;
-  if (!pid) { toast("Hãy tạo một đầu mục trước"); return; }
-  openKidMenu(e.currentTarget, pid);
-};
 function inEditor() { const s = getSelection(); return s.rangeCount && s.anchorNode && s.anchorNode.parentElement && s.anchorNode.parentElement.closest(".txt"); }
 
-/* menu chọn loại mục con */
-const kidMenu = $("#kidMenu");
-let kidTarget = null;
-function openKidMenu(anchor, pid) {
-  kidTarget = pid;
-  const r = anchor.getBoundingClientRect();
-  kidMenu.classList.add("show");
-  kidMenu.style.left = Math.min(r.left, innerWidth - kidMenu.offsetWidth - 6) + "px";
-  kidMenu.style.top = (r.bottom + 4 + kidMenu.offsetHeight > innerHeight ? r.top - kidMenu.offsetHeight - 4 : r.bottom + 4) + "px";
-}
-kidMenu.addEventListener("mousedown", e => e.preventDefault());
-kidMenu.addEventListener("click", e => {
-  const b = e.target.closest("button"); if (!b) return;
-  kidMenu.classList.remove("show");
-  addKid(kidTarget, b.dataset.kind);
-});
-document.addEventListener("mousedown", e => { if (!e.target.closest("#kidMenu,[data-act=kid],#tKid")) kidMenu.classList.remove("show"); });
 
 /* ================= Hộp thoại ================= */
 const veil = $("#veil"), dlg = $("#dlg");
@@ -699,6 +649,9 @@ $("#bNew").onclick = () => guardUnsaved(doNew);
 $("#bOpen").onclick = () => guardUnsaved(doOpen);
 $("#bSave").onclick = () => doSave(false);
 $("#bSave").oncontextmenu = e => { e.preventDefault(); doSave(true); };
+$("#emptyAdd").onclick = () => addItemAfter(null);
+document.querySelectorAll(".head .ib").forEach(b => b.addEventListener("mousedown", e => e.preventDefault()));
+
 /* kéo thanh tiêu đề để di chuyển cửa sổ */
 $("#head").addEventListener("pointerdown", e => {
   if (e.button === 0 && !e.target.closest("button")) { e.preventDefault(); send("drag"); }
