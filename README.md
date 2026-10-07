@@ -33,18 +33,7 @@ Mỗi lần push thay đổi trong `src/` lên GitHub, GitHub Actions (`.github/
 App kiểm tra bản mới 30 giây sau khi mở và mỗi 2 giờ. Khi có bản mới, app tải sẵn và tự khởi động lại lúc bạn không thao tác trên board.
 Chuột phải icon ở khay hệ thống → **Kiểm tra cập nhật** để cập nhật ngay.
 
-Repo đang private nên app cần một token chỉ-đọc. Token được GitHub gắn vào app lúc build (lấy từ Secrets), không nằm trong source code.
-**Cài đặt một lần:**
-1. GitHub → ảnh đại diện → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
-   - Repository access: **Only select repositories** → chọn `Mon_Keep`
-   - Permissions → Repository permissions → **Contents: Read-only**
-   - Expiration: chọn dài nhất có thể (hết hạn thì tạo token mới và làm lại bước 2)
-2. Repo `Mon_Keep` → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
-   - Name: `GLOWBOARD_UPDATE_TOKEN` · Secret: dán token vừa tạo
-3. Repo → tab **Actions** → **Build & Release GlowBoard** → **Run workflow** để tạo bản có gắn token.
-4. Tải bản đó từ trang Releases và cài một lần. Từ đó về sau app tự cập nhật.
-
-Lưu ý: ai có file app đều có thể lấy token ra để đọc source code của repo (token chỉ đọc, không sửa được gì).
+Repo cần để **public** để app tải được bản mới.
 
 ## Build từ source
 Cần .NET SDK 8 (build được trên Windows hoặc Linux):

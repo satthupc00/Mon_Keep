@@ -5,9 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
@@ -31,42 +29,23 @@ namespace GlowBoard
             get { var v = Assembly.GetExecutingAssembly().GetName().Version; return new Version(v.Major, v.Minor, Math.Max(0, v.Build)); }
         }
 
-        /// <summary>Token đọc repo, được GitHub Actions gắn vào lúc build (lấy từ Secrets của repo).</summary>
-        private static readonly string Token = ReadToken();
-
-        public bool Enabled => !string.IsNullOrEmpty(Token);
         public Version StagedVersion { get; private set; }
         private string _stagedDir;
-
-        private static string ReadToken()
-        {
-            try
-            {
-                var raw = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
-                    .FirstOrDefault(a => a.Key == "UpdateToken")?.Value;
-                if (string.IsNullOrWhiteSpace(raw)) return null;
-                return Encoding.UTF8.GetString(Convert.FromBase64String(raw.Trim())).Trim();
-            }
-            catch { return null; }
-        }
 
         /// <summary>Kiểm tra bản mới; nếu có thì tải và giải nén sẵn. Trả về phiên bản mới, hoặc null nếu đang là bản mới nhất.</summary>
         public async Task<Version> CheckAndStageAsync()
         {
-            if (!Enabled) throw new InvalidOperationException("Bản app này chưa được gắn token cập nhật.");
             if (StagedVersion != null) return StagedVersion;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 
-            using (var api = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromMinutes(5) })
+            using (var api = new HttpClient { Timeout = TimeSpan.FromMinutes(5) })
             {
                 api.DefaultRequestHeaders.UserAgent.ParseAdd("Mondiro-GlowBoard/" + CurrentVersion);
-                api.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
 
                 var req = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/repos/{Owner}/{Repo}/releases/latest");
                 req.Headers.Accept.ParseAdd("application/vnd.github+json");
                 var res = await api.SendAsync(req).ConfigureAwait(false);
-                if (res.StatusCode == HttpStatusCode.NotFound) return null;          // chưa có Release nào
-                if (res.StatusCode == HttpStatusCode.Unauthorized) throw new Exception("Token cập nhật đã hết hạn hoặc không đúng.");
+                if (res.StatusCode == HttpStatusCode.NotFound) return null;          // chưa có Release nào (hoặc repo chưa public)
                 res.EnsureSuccessStatusCode();
 
                 var json = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(await res.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -78,24 +57,8 @@ namespace GlowBoard
                     .FirstOrDefault(x => (x["name"] as string) == AssetName);
                 if (asset == null) return null;
 
-                // Tải file zip (GitHub trả về link chuyển hướng tạm thời, link đó không cần token)
-                var dl = new HttpRequestMessage(HttpMethod.Get, (string)asset["url"]);
-                dl.Headers.Accept.ParseAdd("application/octet-stream");
-                var dlRes = await api.SendAsync(dl).ConfigureAwait(false);
-                byte[] zip;
-                if ((int)dlRes.StatusCode >= 300 && (int)dlRes.StatusCode < 400 && dlRes.Headers.Location != null)
-                {
-                    using (var plain = new HttpClient { Timeout = TimeSpan.FromMinutes(5) })
-                    {
-                        plain.DefaultRequestHeaders.UserAgent.ParseAdd("Mondiro-GlowBoard/" + CurrentVersion);
-                        zip = await plain.GetByteArrayAsync(dlRes.Headers.Location).ConfigureAwait(false);
-                    }
-                }
-                else
-                {
-                    dlRes.EnsureSuccessStatusCode();
-                    zip = await dlRes.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                }
+                // Tải file zip
+                var zip = await api.GetByteArrayAsync((string)asset["browser_download_url"]).ConfigureAwait(false);
 
                 // Giải nén vào thư mục tạm
                 var dir = Path.Combine(UpdateDir, latest.ToString());

@@ -28,17 +28,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build
-        env:
-          UPDATE_TOKEN: ${{ secrets.GLOWBOARD_UPDATE_TOKEN }}
         run: |
           VERSION="1.0.${{ github.run_number }}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          if [ -z "$UPDATE_TOKEN" ]; then
-            echo "::warning::Chưa có secret GLOWBOARD_UPDATE_TOKEN – bản này sẽ không tự cập nhật được."
-          fi
-          TOKEN_B64=$(printf '%s' "$UPDATE_TOKEN" | base64 -w0)
-          dotnet build src/GlowBoard/GlowBoard.csproj -c Release \
-            -p:Version="$VERSION" -p:UpdateToken="$TOKEN_B64"
+          dotnet build src/GlowBoard/GlowBoard.csproj -c Release -p:Version="$VERSION"
 
       - name: Zip
         run: |

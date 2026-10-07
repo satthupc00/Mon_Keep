@@ -85,7 +85,7 @@ namespace GlowBoard
                 _updateTimer.Interval = 2 * 60 * 60 * 1000;
                 await CheckUpdateAsync(false);
             };
-            if (_updater.Enabled) _updateTimer.Start();
+            _updateTimer.Start();
         }
 
         private int Scale(int px) => (int)Math.Round(px * DeviceDpi / 96.0);
@@ -232,11 +232,6 @@ namespace GlowBoard
         private async Task CheckUpdateAsync(bool manual)
         {
             if (_checking) return;
-            if (!_updater.Enabled)
-            {
-                if (manual) _tray.ShowBalloonTip(4000, AppTitle, "Bản app này chưa được gắn token cập nhật. Hãy tải bản mới nhất từ trang Releases trên GitHub.", ToolTipIcon.Warning);
-                return;
-            }
             _checking = true;
             try
             {
