@@ -40,6 +40,8 @@
   .ib:hover{background:var(--btn-h)}
   .ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .ib.icon{padding:0;width:26px}
+  .ib.on{color:var(--neon);background:#3b5446}
+  .ib.on:hover{background:#456152}
 
   .ib b{font-size:13px}
 
@@ -137,6 +139,7 @@
       <button class="ib icon" id="bNew" title="Board mới (Ctrl+N)"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg></button>
       <button class="ib icon" id="bOpen" title="Mở board (Ctrl+O)"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
       <button class="ib icon" id="bSave" title="Lưu (Ctrl+S) · Chuột phải: Lưu thành…"><svg viewBox="0 0 24 24"><path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg></button>
+      <button class="ib icon" id="bTop" title="Luôn nằm trên cùng: đang tắt"><svg viewBox="0 0 24 24"><path d="M9 3h6l-1 6 3.5 3.5v1.5h-11v-1.5L10 9z"/><path d="M12 14v7"/></svg></button>
       <button class="ib icon" id="bHide" title="Thu xuống khay hệ thống"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
     </div>
   </header>
@@ -665,6 +668,7 @@ document.querySelectorAll(".head .ib").forEach(b => b.addEventListener("mousedow
 $("#head").addEventListener("pointerdown", e => {
   if (e.button === 0 && !e.target.closest("button")) { e.preventDefault(); send("drag"); }
 });
+$("#bTop").onclick = () => send("toggleTop");
 $("#bHide").onclick = () => { flush(); send("hide"); };
 
 document.addEventListener("keydown", e => {
@@ -706,6 +710,14 @@ function onHost(msg) {
     case "flush": flush(); break;
     case "error": toast(msg.message || "Có lỗi xảy ra"); break;
     case "toast": toast(msg.message); break;
+    case "onTop": {
+      const b = $("#bTop");
+      if (b.classList.contains("on") !== !!msg.on && msg.init !== true && b.dataset.ready) toast(msg.on ? "Luôn nằm trên cùng: bật" : "Luôn nằm trên cùng: tắt");
+      b.dataset.ready = "1";
+      b.classList.toggle("on", !!msg.on);
+      b.title = "Luôn nằm trên cùng: " + (msg.on ? "đang bật" : "đang tắt");
+      break;
+    }
   }
 }
 if (host) host.addEventListener("message", e => onHost(typeof e.data === "string" ? JSON.parse(e.data) : e.data));
@@ -732,6 +744,7 @@ function browserHost(msg) {
     case "new": onHost({ type: "load", text: JSON.stringify({ items: [] }) }); break;
     case "openLink": window.open(msg.url, "_blank"); break;
     case "hide": toast("(Bản xem thử) Trong app sẽ thu xuống khay hệ thống"); break;
+    case "toggleTop": { const on = !$("#bTop").classList.contains("on"); setTimeout(() => onHost({ type: "onTop", on }), 0); break; }
   }
 }
 

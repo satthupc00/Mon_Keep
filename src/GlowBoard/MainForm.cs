@@ -39,6 +39,8 @@ namespace GlowBoard
 
         private string _currentFile;   // null = board chưa lưu thành file (tự lưu vào DefaultBoardPath)
         private bool _peek;            // tạm thời cho board nổi lên trên các cửa sổ khác
+        private bool _onTop;           // tuỳ chọn: luôn nằm trên mọi cửa sổ
+        private ToolStripMenuItem _onTopItem;
         private bool _quitting;
         private bool _pageLoaded;
         private bool _dialogOpen;
@@ -53,6 +55,7 @@ namespace GlowBoard
             _startupFile = startupFile;
             _justUpdated = justUpdated;
             _settings = Settings.Load(Path.Combine(DataDir, "settings.ini"));
+            _onTop = _settings.GetBool("OnTop");
 
             Text = AppTitle;
             Icon = LoadAppIcon(new Size(Scale(32), Scale(32)));
@@ -136,6 +139,8 @@ namespace GlowBoard
             m.Items.Add("Lưu", null, (s, e) => { ShowBoard(); Post(new { type = "requestSave", @as = false }); });
             m.Items.Add("Lưu thành…", null, (s, e) => { ShowBoard(); Post(new { type = "requestSave", @as = true }); });
             m.Items.Add(new ToolStripSeparator());
+            _onTopItem = new ToolStripMenuItem("Luôn nằm trên cùng", null, (s, e) => SetOnTop(!_onTop)) { Checked = _onTop };
+            m.Items.Add(_onTopItem);
             _autoStartItem = new ToolStripMenuItem("Khởi động cùng Windows", null, (s, e) => ToggleAutoStart()) { Checked = IsAutoStart() };
             m.Items.Add(_autoStartItem);
             m.Items.Add("Đưa board về vị trí mặc định", null, (s, e) => { Bounds = DefaultBounds(); SaveBounds(); ShowBoard(); });
@@ -188,8 +193,20 @@ namespace GlowBoard
             }
         }
 
+        /// <summary>Bật / tắt chế độ luôn nằm trên cùng (tắt thì board lại nằm dưới như widget).</summary>
+        private void SetOnTop(bool on)
+        {
+            _onTop = on;
+            _settings.Set("OnTop", on ? 1 : 0); _settings.Save();
+            if (_onTopItem != null) _onTopItem.Checked = on;
+            TopMost = on;
+            if (!on) SendToBottom();
+            Post(new { type = "onTop", on });
+        }
+
         private void SendToBottom()
         {
+            if (_onTop) return;
             NativeMethods.SetWindowPos(Handle, NativeMethods.HWND_BOTTOM, 0, 0, 0, 0,
                 NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOACTIVATE);
         }
@@ -219,7 +236,7 @@ namespace GlowBoard
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            SendToBottom();
+            if (_onTop) TopMost = true; else SendToBottom();
         }
 
         protected override void OnDeactivate(EventArgs e)
@@ -281,7 +298,7 @@ namespace GlowBoard
                 ShowBoard();
                 return;
             }
-            if (m.Msg == NativeMethods.WM_WINDOWPOSCHANGING && !_peek)
+            if (m.Msg == NativeMethods.WM_WINDOWPOSCHANGING && !_peek && !_onTop)
             {
                 // Luôn giữ board nằm dưới các cửa sổ khác
                 var wp = (NativeMethods.WINDOWPOS)Marshal.PtrToStructure(m.LParam, typeof(NativeMethods.WINDOWPOS));
@@ -401,6 +418,7 @@ namespace GlowBoard
             {
                 case "ready":
                     LoadInitialBoard();
+                    Post(new { type = "onTop", on = _onTop });
                     if (_justUpdated) Post(new { type = "toast", message = "Đã cập nhật GlowBoard lên v" + Updater.CurrentVersion });
                     break;
                 case "autosave": TryWrite(_currentFile ?? DefaultBoardPath, Str("text")); break;
@@ -408,6 +426,7 @@ namespace GlowBoard
                 case "open": OpenBoard(); break;
                 case "new": NewBoard(); break;
                 case "hide": HideBoard(); break;
+                case "toggleTop": SetOnTop(!_onTop); break;
                 case "openLink": OpenLink(Str("url")); break;
                 case "drag":
                     NativeMethods.ReleaseCapture();

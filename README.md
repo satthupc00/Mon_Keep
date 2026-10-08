@@ -25,6 +25,7 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 | Chữ | Chỉ gõ chữ thường, không chèn link trong chữ |
 | Lưu / Mở / Mới | `Ctrl+S` (`Ctrl+Shift+S` = Lưu thành…) · `Ctrl+O` · `Ctrl+N` |
 | Di chuyển / mở rộng board | Kéo thanh tiêu đề · kéo các cạnh viền |
+| Luôn nằm trên cùng | Nút ghim 📌 trên thanh tiêu đề, hoặc chuột phải icon ở khay hệ thống → **Luôn nằm trên cùng** (tắt thì board lại nằm dưới như widget) |
 | Hiện board lên trên | Click icon ở khay hệ thống (board tự lùi xuống dưới khi bạn click ra chỗ khác) |
 
 Board **tự lưu** liên tục: vào file `.gboard` đang mở, hoặc vào `%APPDATA%\Mondiro\GlowBoard\board.gboard` nếu chưa lưu thành file.
