@@ -71,11 +71,9 @@
   .group>.row{padding-right:84px}
   .group>.row .txt{min-width:60px}
   .links{display:flex;gap:3px;flex:none;margin-top:1px}
-  .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:rgba(255,255,255,.28);transition:color .2s,background .2s}
-  .lk-txt{font-size:10.5px;font-weight:800;letter-spacing:-.01em;padding:0 3px}
-  .lk:has(.lk-txt){width:auto}
-  .lk svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .lk:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+  .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:#74777e;transition:color .2s,background .2s}
+  .lk svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .lk:hover{background:rgba(255,255,255,.08);color:#b3b6bc}
   .lk.set{color:var(--neon)}
   .lk.set:hover{color:#8dffb4}
   .group>.row.off .lk.set{color:var(--off-dark)}
@@ -275,10 +273,10 @@ const $ = s => document.querySelector(s);
 const listEl = $("#list");
 const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg>';
 
-const ICON_REF = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M7 5v4M12 5v4M17 5v4"/><path d="M10.5 12.2v4.6l4-2.3z" fill="currentColor"/></svg>';
-const ICON_TASK = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 6.5" stroke-width="3"/></svg>';
-const ICON_GD = '<svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9.5h3M10 8v3"/><circle cx="14.5" cy="8.6" r=".9" fill="currentColor" stroke="none"/><circle cx="15.8" cy="10.8" r=".9" fill="currentColor" stroke="none"/></svg>';
-const ICON_KCS = '<span class="lk-txt">Miro</span>';
+const ICON_REF = '<svg viewBox="0 0 24 24"><mask id="mkRef"><rect width="24" height="24" fill="#fff" stroke="none"/><circle cx="15" cy="15" r="5.6" fill="#000" stroke="none"/></mask><g mask="url(#mkRef)"><rect x="3.5" y="4" width="13" height="17" rx="2"/><path d="M7 3h6v2.6H7z" fill="currentColor"/><path d="M6.8 10h6.5M6.8 13.2h4M6.8 16.4h3"/></g><circle cx="15" cy="15" r="3.9" stroke-width="2"/><path d="M17.9 17.9l3.4 3.4" stroke-width="2.6"/></svg>';
+const ICON_TASK = '<svg viewBox="0 0 24 24"><mask id="mkTask"><rect width="24" height="24" fill="#fff" stroke="none"/><path d="M6.2 8.6l1.9 1.9 3.3-3.7M14.4 8.8h3.6M6.2 15.4l1.9 1.9 3.3-3.7M14.4 15.6h3.6" stroke="#000" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></mask><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="currentColor" stroke="none" mask="url(#mkTask)"/></svg>';
+const ICON_GD = '<svg viewBox="0 0 24 24"><path d="M3.02 14.41A9.3 9.3 0 0 1 15.18 3.26M20.98 9.59A9.3 9.3 0 0 1 8.82 20.74" stroke-width="2.3"/><path d="M17.96 4.63L16.43 1.11L14.18 5.34zM6.04 19.37L7.57 22.89L9.82 18.66z" fill="currentColor" stroke="none"/><path d="M8.2 8h7.6a1.2 1.2 0 0 1 1.2 1.2v4.4a1.2 1.2 0 0 1-1.2 1.2h-4.6l-2.3 2v-2h-.7A1.2 1.2 0 0 1 7 13.6V9.2A1.2 1.2 0 0 1 8.2 8z" stroke-width="1.5"/><path d="M9.6 10.6h4.8M9.6 12.6h3.2" stroke-width="1.3"/></svg>';
+const ICON_KCS = '<svg viewBox="0 0 24 24"><mask id="mkMiro"><rect width="24" height="24" fill="#fff" stroke="none"/><path d="M6.6 6.2l2.7 4.3-2.9 7.4M10.6 6.2l2.7 4.3-2.9 7.4M14.6 6.2l2.7 4.3-2.9 7.4" stroke="#000" stroke-width="2.7" stroke-linecap="butt" stroke-linejoin="miter" fill="none"/></mask><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="currentColor" stroke="none" mask="url(#mkMiro)"/></svg>';
 /* các nút link sau chữ đầu mục, theo thứ tự hiển thị */
 const LINKS = {
   ref:  { key: "refLink",  icon: ICON_REF,  name: "Reference animation" },
