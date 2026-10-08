@@ -32,11 +32,12 @@
   /* ---------- header (kéo để di chuyển cửa sổ) ---------- */
   .head{display:flex;align-items:center;gap:10px;padding:9px 10px 8px 12px;background:var(--head);border-bottom:1px solid var(--line);cursor:default;flex:none}
   .head .logo{width:30px;height:30px;flex:none;pointer-events:none}
-  .brand{line-height:1.2;min-width:0;pointer-events:none}
+  .brand{line-height:1.2;flex:none;pointer-events:none}
   .brand .t{font-size:16px;font-weight:700;white-space:nowrap}
   .brand .t .m{color:var(--red)}
   .brand .d{font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .head .win{margin-left:auto;display:flex;gap:4px;flex:none}
+  .head .win{margin-left:auto;display:flex;gap:4px;flex:0 1 auto;min-width:0;justify-content:flex-end}
+  .head .win .ib{flex:none}
   .ib{height:26px;min-width:26px;padding:0 8px;border-radius:6px;background:var(--btn);color:#eef0f3;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
   .ib:hover{background:var(--btn-h)}
   .ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -120,9 +121,11 @@
   .dlg input{width:100%;background:#2b2d33;border:1px solid #5a5e68;color:#fff;border-radius:6px;padding:7px 8px;font-size:12.5px;margin-bottom:12px;outline:none;-webkit-user-select:text;user-select:text}
   .dlg input:focus{border-color:var(--neon)}
   /* ---------- team ---------- */
-  .chip{display:inline-flex;align-items:center;gap:4px;background:#2f3a33;color:var(--neon);border-radius:9px;padding:0 7px;font-size:10px;font-weight:600;margin-right:6px;vertical-align:1px;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  /* tên team: nằm bên phải thanh tiêu đề, cạnh nút ghim */
+  .chip{display:inline-flex;align-items:center;gap:5px;height:26px;background:#2f3a33;color:var(--neon);border-radius:13px;padding:0 10px;font-size:11px;font-weight:600;max-width:160px;min-width:0;flex:0 1 auto;white-space:nowrap;align-self:center}
+  .chip #chipName{overflow:hidden;text-overflow:ellipsis}
   .chip.admin{background:#4a3d22;color:#ffd34d}
-  .chip .sync{width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none;transition:background .3s}
+  .chip .sync{flex:none;width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none;transition:background .3s}
   .chip .sync.off{background:#8a8e97}
   .view{position:absolute;inset:0;overflow:auto;padding:12px 10px 40px;display:none}
   .view.show{display:block}
@@ -177,11 +180,12 @@
     </svg>
     <div class="brand">
       <div class="t"><span class="m">Mondiro</span> GlowBoard</div>
-      <div class="d"><span class="chip" id="chip" hidden><span class="sync" id="sync"></span><span id="chipName"></span></span><span id="sub">Keep what you want</span></div>
+      <div class="d"><span id="sub">Keep what you want</span></div>
     </div>
     <div class="win">
       <button class="ib icon" id="bBack" title="Về danh sách team" hidden><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <button class="ib icon" id="bLogout" title="Thoát chế độ Admin" hidden><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></button>
+      <span class="chip" id="chip" hidden><span class="sync" id="sync"></span><span id="chipName"></span></span>
       <button class="ib icon" id="bTop" title="Luôn nằm trên cùng: đang tắt"><svg viewBox="0 0 24 24"><path d="M9 3h6l-1 6 3.5 3.5v1.5h-11v-1.5L10 9z"/><path d="M12 14v7"/></svg></button>
       <button class="ib icon" id="bHide" title="Thu xuống khay hệ thống"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
     </div>
@@ -987,7 +991,7 @@ function openTeam(teamId, name) {
     if (!snap.exists()) { showLock("code"); return; }
     const t = snap.data();
     S.teamName = t.name || "Team";
-    setChip((S.admin ? "ADMIN · " : "") + S.teamName, S.admin);
+    setChip(S.teamName, S.admin);
     if (t.locked && !S.admin) { if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; } showLock("locked"); }
     else if (!S.unsubItems) { show("scroll"); listenItems(); }
   }, err => { if (!S.admin) showLock("code"); else toast(errText(err)); });
