@@ -52,17 +52,29 @@
   ul{list-style:none;margin:0;padding:0}
   .group{position:relative;margin-bottom:2px}
   .row{position:relative;display:flex;align-items:flex-start;gap:10px;padding:5px 8px;border-radius:7px}
-  .dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:6px;cursor:pointer}
-  .dot.on{background:var(--neon);animation:pulseOn 2.4s ease-in-out infinite}
-  .dot.off{background:var(--off-dark)}
-  @keyframes pulseOn{0%,100%{background:var(--neon)}50%{background:var(--neon-dark)}}
+  /* chấm tròn bóng: viền tối, đáy tối hơn, vệt sáng phía trên, bóng đổ nhẹ */
+  .dot{position:relative;width:12px;height:12px;border-radius:50%;flex:none;margin-top:5px;cursor:pointer;
+       box-shadow:inset 0 0 0 1px rgba(0,0,0,.38),inset 0 -2.5px 3px rgba(0,0,0,.28),1px 1.5px 2px rgba(0,0,0,.35)}
+  .dot::after{content:"";position:absolute;left:2.5px;top:1.2px;width:7px;height:5px;border-radius:50%;
+       background:linear-gradient(to bottom,rgba(255,255,255,.9),rgba(255,255,255,.18))}
+  .dot.on{background-color:var(--neon);animation:pulseOn 2.4s ease-in-out infinite}
+  .dot.off{background-color:var(--off-dark)}
+  @keyframes pulseOn{0%,100%{background-color:var(--neon)}50%{background-color:var(--neon-dark)}}
   .txt{flex:1;min-width:0;margin-right:74px;outline:none;line-height:22px;min-height:22px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text;cursor:text}
   .txt:empty::before{content:attr(data-ph);color:rgba(255,255,255,.3)}
   .group>.row .txt{font-weight:700;color:var(--neon);transition:color .3s}
   .group>.row.off .txt{color:var(--off-dark)}
   .children .row .txt{font-weight:400}
-  .txt a{color:var(--neon);text-decoration:underline;text-decoration-color:rgba(57,255,122,.45);text-underline-offset:2px}
-  .group>.row.off .txt a{color:inherit;text-decoration-color:rgba(158,162,172,.5)}
+  /* đầu mục: chữ co theo nội dung, 2 nút link nằm ngay sau chữ */
+  .group>.row .txt{flex:0 1 auto;min-width:40px;margin-right:0}
+  .group>.row{padding-right:84px}
+  .links{display:flex;gap:3px;flex:none;margin-top:1px}
+  .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:rgba(255,255,255,.28);transition:color .2s,background .2s}
+  .lk svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .lk:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+  .lk.set{color:var(--neon)}
+  .lk.set:hover{color:#8dffb4}
+  .group>.row.off .lk.set{color:var(--off-dark)}
   /* nút + − nằm đè ở cuối dòng (không làm chữ nhảy dòng), ẩn và hiện dần khi rê chuột */
   .acts{position:absolute;right:6px;top:6px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .5s ease}
   .children .acts{top:5px}
@@ -104,7 +116,6 @@
   .dlg input:focus{border-color:var(--neon)}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);background:#2b2d33;border:1px solid #5a5e68;padding:6px 12px;border-radius:7px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;z-index:60;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%)}
-  .tip{position:fixed;background:#2b2d33;border:1px solid #5a5e68;color:#dfe1e5;font-size:11px;padding:4px 7px;border-radius:5px;pointer-events:none;z-index:45;display:none;max-width:320px;word-break:break-all}
 </style>
 </head>
 <body>
@@ -129,7 +140,7 @@
   </header>
 
   <main class="canvas">
-    <div class="wm">Mondiro</div>
+    <div class="wm">Created by Mondiro</div>
     <div class="scroll" id="scroll">
       <ul id="list"></ul>
       <div class="empty" id="empty" hidden>Board đang trống<br><button class="ib" id="emptyAdd">＋ Thêm đầu mục</button></div>
@@ -142,7 +153,6 @@
 <!-- hộp thoại dùng chung -->
 <div class="veil" id="veil"><div class="dlg" id="dlg"></div></div>
 <div class="toast" id="toast"></div>
-<div class="tip" id="tip"></div>
 
 <script>
 "use strict";
@@ -162,7 +172,7 @@ let uid = 0;
 const newId = () => "n" + Date.now().toString(36) + (uid++).toString(36);
 
 function sampleDoc() {
-  const it = (html, enabled, children) => ({ id: newId(), html, enabled, children: children || [] });
+  const it = (html, enabled, children) => ({ id: newId(), html, enabled, refLink: "", taskLink: "", children: children || [] });
   const ch = (html, checked) => ({ id: newId(), html, checked: !!checked });
   return { items: [
     it("Chào mừng đến với GlowBoard", true, [
@@ -170,14 +180,15 @@ function sampleDoc() {
       ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự"),
       ch("Rê chuột vào dòng để thấy nút ↳ ＋ −"),
     ]),
-    it("Bôi đen chữ rồi bấm Ctrl+K để chèn link", false, [
-      ch("Double click vào link để mở"),
+    it("Hai nút sau chữ: Reference animation và List task", false, [
+      ch("Double click vào nút để chèn link"),
+      ch("Click 1 lần để mở link"),
     ]),
     it("Kéo các cạnh cửa sổ để mở rộng board", false),
   ]};
 }
 
-/* ---- làm sạch HTML: chỉ giữ chữ đậm, link, xuống dòng ---- */
+/* ---- làm sạch HTML: chỉ giữ chữ và xuống dòng ---- */
 function cleanUrl(u) {
   u = (u || "").trim();
   if (!u) return "";
@@ -197,11 +208,8 @@ function sanitize(html) {
       const tag = n.tagName;
       if (tag === "BR") { dst.appendChild(document.createElement("br")); continue; }
       if (tag === "SCRIPT" || tag === "STYLE") continue;
-      let el = null;
-      if (tag === "A") { const h = cleanUrl(n.getAttribute("href")); if (h) { el = document.createElement("a"); el.setAttribute("href", h); } }
       if ((tag === "DIV" || tag === "P") && dst.childNodes.length) dst.appendChild(document.createElement("br"));
-      if (el) { walk(n, el); if (el.childNodes.length) dst.appendChild(el); }
-      else walk(n, dst);
+      walk(n, dst);
     }
   })(t.content, out);
   // bỏ <br> thừa ở cuối
@@ -209,12 +217,19 @@ function sanitize(html) {
   if (out.childNodes.length === 1 && out.firstChild.nodeName === "BR") out.innerHTML = "";
   return out.innerHTML;
 }
+/* board cũ có link trong chữ: chuyển link đầu tiên sang nút Reference animation */
+function firstLink(html) {
+  const t = document.createElement("template"); t.innerHTML = String(html || "");
+  const a = t.content.querySelector("a[href]");
+  return a ? cleanUrl(a.getAttribute("href")) : "";
+}
 function plain(html) { const d = document.createElement("div"); d.innerHTML = html; return d.textContent.trim(); }
 
 function normalizeDoc(raw) {
   if (!raw || !Array.isArray(raw.items)) throw new Error("File không phải board GlowBoard");
   return { items: raw.items.map(i => ({
     id: newId(), html: sanitize(String(i.html || "")), enabled: !!i.enabled,
+    refLink: cleanUrl(String(i.refLink || "")) || firstLink(i.html), taskLink: cleanUrl(String(i.taskLink || "")),
     children: (Array.isArray(i.children) ? i.children : []).map(c => ({
       id: newId(), html: sanitize(String(c.html || "")), checked: !!c.checked,
     })),
@@ -222,7 +237,7 @@ function normalizeDoc(raw) {
 }
 function serialize() {
   return JSON.stringify({ app: FILE_APP, version: 1, items: doc.items.map(i => ({
-    html: i.html, enabled: i.enabled,
+    html: i.html, enabled: i.enabled, refLink: i.refLink || "", taskLink: i.taskLink || "",
     children: i.children.map(c => ({ html: c.html, checked: c.checked })),
   }))}, null, 1);
 }
@@ -254,6 +269,17 @@ const $ = s => document.querySelector(s);
 const listEl = $("#list");
 const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg>';
 
+const ICON_REF = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M7 5v4M12 5v4M17 5v4"/><path d="M10.5 12.2v4.6l4-2.3z" fill="currentColor"/></svg>';
+const ICON_TASK = '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5"/><path d="M8.5 10l1.3 1.3L12 9M8.5 15.5l1.3 1.3L12 14.5M14 10.3h2.5M14 15.8h2.5"/></svg>';
+const LINKS = {
+  ref:  { key: "refLink",  icon: ICON_REF,  name: "Reference animation" },
+  task: { key: "taskLink", icon: ICON_TASK, name: "List task" },
+};
+function linkBtn(node, kind) {
+  const L = LINKS[kind], url = node[L.key];
+  const title = `${L.name}${url ? "" : " (chưa có link)"}\nClick: mở link · Double click: chèn / sửa link`;
+  return `<button class="lk${url ? " set" : ""}" data-act="link" data-kind="${kind}" title="${title}">${L.icon}</button>`;
+}
 function rowHtml(node, isKid) {
   const lead = isKid
     ? `<span class="chk${node.checked ? " ok" : ""}" data-act="check">${CHECK_SVG}</span>`
@@ -261,7 +287,8 @@ function rowHtml(node, isKid) {
   const acts = isKid
     ? `<button class="ab add" data-act="add" title="Thêm mục con bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`
     : `<button class="ab kid" data-act="kid" title="Thêm mục con">↳</button><button class="ab add" data-act="add" title="Thêm đầu mục bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`;
-  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div><span class="acts">${acts}</span>`;
+  const links = isKid ? "" : `<span class="links">${linkBtn(node, "ref")}${linkBtn(node, "task")}</span>`;
+  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}<span class="acts">${acts}</span>`;
 }
 function makeRow(node, isKid, tag) {
   const el = document.createElement(tag);
@@ -301,7 +328,7 @@ function updateStatus(text) {
 
 /* ================= Thao tác dữ liệu ================= */
 function addItemAfter(id) {
-  const n = { id: newId(), html: "", enabled: true, children: [] };
+  const n = { id: newId(), html: "", enabled: true, refLink: "", taskLink: "", children: [] };
   if (id == null) doc.items.push(n);
   else { const f = find(id); doc.items.splice((f.parent ? doc.items.indexOf(f.parent) : f.index) + 1, 0, n); }
   render(); changed(); focusRow(n.id);
@@ -345,6 +372,7 @@ listEl.addEventListener("click", e => {
   const a = e.target.closest("[data-act]"); if (!a) return;
   const row = a.closest(".row"), id = row.dataset.id, f = find(id);
   switch (a.dataset.act) {
+    case "link": linkClick(a, f.node); break;
     case "dot": f.node.enabled = !f.node.enabled; a.className = "dot " + (f.node.enabled ? "on" : "off"); row.classList.toggle("off", !f.node.enabled); changed(); break;
     case "check": f.node.checked = !f.node.checked; a.classList.toggle("ok", f.node.checked); row.classList.toggle("done", f.node.checked); changed(); break;
     case "add": f.parent ? addKid(f.parent.id, id) : addItemAfter(id); break;
@@ -352,7 +380,38 @@ listEl.addEventListener("click", e => {
     case "kid": addKid(id); break;
   }
 });
-listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.chk")) e.preventDefault(); });
+listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.chk,.lk")) e.preventDefault(); });
+
+/* nút link: click 1 lần = mở link, double click = chèn / sửa link (chờ một chút để phân biệt) */
+let lkTimer = 0, lkLast = null;
+function linkClick(btn, node) {
+  const kind = btn.dataset.kind;
+  if (lkTimer && lkLast === btn) {
+    clearTimeout(lkTimer); lkTimer = 0; lkLast = null;
+    editLink(node, kind);
+    return;
+  }
+  clearTimeout(lkTimer); lkLast = btn;
+  lkTimer = setTimeout(() => {
+    lkTimer = 0; lkLast = null;
+    const url = node[LINKS[kind].key];
+    if (url) send("openLink", { url });
+    else toast("Chưa có link · double click để chèn");
+  }, 260);
+}
+function editLink(node, kind) {
+  const L = LINKS[kind], cur = node[L.key] || "";
+  const save = url => { node[L.key] = url; render(); changed(); };
+  const buttons = [{ label: "Huỷ" }];
+  if (cur) buttons.push({ label: "Xoá link", run: () => save("") });
+  buttons.push({ label: "Lưu", cls: "primary", def: true, run: v => {
+    const url = cleanUrl(v);
+    if (!url && v.trim()) { toast("Link không hợp lệ"); return; }
+    save(url);
+  }});
+  dialog({ title: "Link " + L.name, text: plain(node.html) || "(đầu mục trống)",
+    input: { value: cur, placeholder: "https://… hoặc D:\\Project\\..." }, buttons });
+}
 
 listEl.addEventListener("input", e => {
   const t = e.target.closest(".txt"); if (!t) return;
@@ -391,7 +450,7 @@ listEl.addEventListener("keydown", e => {
     } else if (e.shiftKey && f.parent) {
       // đưa mục con ra ngoài thành đầu mục
       f.list.splice(f.index, 1);
-      const n = { id: f.node.id, html: f.node.html, enabled: true, children: [] };
+      const n = { id: f.node.id, html: f.node.html, enabled: true, refLink: "", taskLink: "", children: [] };
       doc.items.splice(doc.items.indexOf(f.parent) + 1, 0, n); render(); changed(); focusRow(n.id, true);
     }
   } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
@@ -407,29 +466,6 @@ function caretAtEdge(el, top) {
   return top ? r.top - b.top < 12 : b.bottom - r.bottom < 12;
 }
 
-/* ---- link: double click để mở; bôi đen chữ thì hiện gợi ý Ctrl+K ---- */
-const tip = $("#tip");
-listEl.addEventListener("click", e => { if (e.target.closest(".txt a")) e.preventDefault(); });
-listEl.addEventListener("dblclick", e => {
-  const a = e.target.closest(".txt a"); if (!a) return;
-  e.preventDefault();
-  getSelection().collapseToEnd();
-  send("openLink", { url: a.getAttribute("href") });
-});
-let tipT = 0;
-document.addEventListener("selectionchange", () => {
-  clearTimeout(tipT);
-  tipT = setTimeout(() => {
-    const sel = getSelection();
-    if (drag || !sel.rangeCount || sel.isCollapsed || !inEditor() || veil.classList.contains("show")) { tip.style.display = "none"; return; }
-    const r = sel.getRangeAt(0).getBoundingClientRect();
-    tip.textContent = "Ctrl+K để chèn link";
-    tip.style.display = "block";
-    tip.style.left = Math.max(4, Math.min(r.left + r.width / 2 - tip.offsetWidth / 2, innerWidth - tip.offsetWidth - 4)) + "px";
-    tip.style.top = (r.top - tip.offsetHeight - 6 < 0 ? r.bottom + 6 : r.top - tip.offsetHeight - 6) + "px";
-  }, 250);
-});
-
 /* ================= Giữ & kéo để sắp xếp ================= */
 /* Dòng chưa được chọn: nhấn giữ rồi kéo là di chuyển ngay; click nhả ra là để gõ chữ.
    Dòng đang gõ chữ: kéo bình thường là bôi đen chữ, nhấn giữ ~0.3 giây rồi kéo là di chuyển. */
@@ -439,7 +475,7 @@ const scrollEl = $("#scroll");
 
 listEl.addEventListener("pointerdown", e => {
   if (e.button !== 0 || drag) return;
-  if (e.target.closest(".ab,.dot,.chk")) return;
+  if (e.target.closest(".ab,.dot,.chk,.lk")) return;
   const row = e.target.closest(".row"); if (!row) return;
   const txt = row.querySelector(".txt");
   const x = e.clientX, y = e.clientY;
@@ -587,42 +623,6 @@ function closeDialog(restore) {
 }
 veil.addEventListener("mousedown", e => { if (e.target === veil) closeDialog(true); });
 
-/* ---- chèn link ---- */
-function openLinkDialog() {
-  const sel = getSelection();
-  if (!inEditor()) { toast("Hãy bôi đen chữ trong một dòng trước"); return; }
-  const range = sel.getRangeAt(0).cloneRange();
-  const txt = range.startContainer.parentElement.closest(".txt");
-  const node = range.commonAncestorContainer;
-  const existing = (node.nodeType === 1 ? node : node.parentElement).closest("a");
-  const buttons = [{ label: "Huỷ" }];
-  if (existing) buttons.push({ label: "Bỏ link", run: () => {
-    restoreRange(txt, range);
-    const r = document.createRange(); r.selectNodeContents(existing);
-    getSelection().removeAllRanges(); getSelection().addRange(r);
-    document.execCommand("unlink");
-    txt.dispatchEvent(new Event("input", { bubbles: true }));
-  }});
-  buttons.push({ label: "Chèn link", cls: "primary", def: true, run: v => {
-    const url = cleanUrl(v);
-    if (!url) { toast("Link không hợp lệ"); restoreRange(txt, range); return; }
-    restoreRange(txt, range);
-    if (existing) existing.setAttribute("href", url);
-    else if (range.collapsed) {
-      const a = document.createElement("a"); a.href = url; a.textContent = v.trim();
-      range.insertNode(a);
-      const r = document.createRange(); r.setStartAfter(a); r.collapse(true);
-      getSelection().removeAllRanges(); getSelection().addRange(r);
-    } else document.execCommand("createLink", false, url);
-    txt.dispatchEvent(new Event("input", { bubbles: true }));
-  }});
-  dialog({ title: existing ? "Sửa link" : "Chèn link", text: "Dán địa chỉ web hoặc đường dẫn thư mục trên máy",
-    input: { value: existing ? existing.getAttribute("href") : "", placeholder: "https://… hoặc D:\\Project\\..." }, buttons });
-}
-function restoreRange(txt, range) {
-  txt.focus();
-  const s = getSelection(); s.removeAllRanges(); s.addRange(range);
-}
 
 /* ---- toast ---- */
 let toastT = 0;
@@ -665,7 +665,7 @@ document.addEventListener("keydown", e => {
   if (k === "s") { e.preventDefault(); doSave(e.shiftKey); }
   else if (k === "o") { e.preventDefault(); guardUnsaved(doOpen); }
   else if (k === "n") { e.preventDefault(); guardUnsaved(doNew); }
-  else if (k === "k") { e.preventDefault(); openLinkDialog(); }
+  else if (k === "k") e.preventDefault();
   else if (k === "b" || k === "i" || k === "u") e.preventDefault();   // không dùng định dạng chữ
   else if (["p", "f", "r", "u", "j", "g", "h", "l", "=", "-", "+", "0"].includes(k)) e.preventDefault(); // chặn phím tắt của trình duyệt
 });
