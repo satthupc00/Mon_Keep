@@ -50,6 +50,10 @@
   /* ---------- canvas ---------- */
   .canvas{position:relative;flex:1;min-height:0}
   .wm{position:absolute;right:12px;bottom:8px;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.22);pointer-events:none;-webkit-user-select:none;user-select:none}
+  /* nút config các nút link: góc dưới trái, mờ, rê chuột thì sáng */
+  .cfgb{position:absolute;left:8px;bottom:5px;z-index:4;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:rgba(255,255,255,.3);transition:color .2s,background .2s}
+  .cfgb:hover{color:#e6e8ec;background:rgba(255,255,255,.08)}
+  .cfgb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .scroll{position:absolute;inset:0;overflow:auto;padding:12px 10px 40px}
   .scroll::-webkit-scrollbar{width:9px}
   .scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:9px;border:2px solid var(--bg)}
@@ -89,13 +93,25 @@
   .ab:hover{background:rgba(255,255,255,.14);color:rgba(255,255,255,.8)}
   .ab.kid{font-size:12px}
 
-  .children .row{padding-left:36px;gap:8px;font-size:13px;color:var(--sub)}
+  .children .row{padding-left:44px;gap:8px;font-size:13px;color:var(--sub)}
   .children .txt{line-height:20px;min-height:20px;margin-right:50px}
-  .chk{width:14px;height:14px;border:1.5px solid rgba(255,255,255,.55);border-radius:3px;flex:none;margin-top:3px;display:grid;place-items:center;cursor:pointer}
-  .chk svg{width:10px;height:10px;stroke:#0d2d18;stroke-width:3;fill:none;display:none}
-  .chk.ok{background:var(--neon);border-color:var(--neon)}
-  .chk.ok svg{display:block}
-  .row.done .txt{text-decoration:line-through;opacity:.5}
+  /* mục con: chấm nhỏ đầu dòng; có link thì gạch dưới, Ctrl+Click để mở */
+  .bul{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);flex:none;margin:8px 4px 0 5px}
+  .kid.linked .txt{text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+  .ctrl .kid.linked .txt{cursor:pointer}
+  /* thu gọn mục con */
+  .tw{width:14px;height:22px;flex:none;display:grid;place-items:center;color:#8d9099;margin:0 -6px 0 -4px;border-radius:4px}
+  .tw svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+  .tw:hover{color:#e6e8ec;background:rgba(255,255,255,.07)}
+  .tw.none{visibility:hidden;pointer-events:none}
+  .group:not(.collapsed) .tw svg{transform:rotate(90deg)}
+  .group.collapsed>.children{display:none}
+  .cnt{font-size:10px;color:#a9adb6;background:rgba(255,255,255,.08);border-radius:8px;padding:1px 6px;margin-top:3px;flex:none;align-self:flex-start;font-weight:600}
+  /* icon PNG tự thêm */
+  .lk img{width:16px;height:16px;display:block;filter:grayscale(1) brightness(.8);opacity:.5;transition:filter .2s,opacity .2s}
+  .lk:hover img{opacity:.8}
+  .lk.set img{filter:none;opacity:1}
+  .group>.row.off .lk.set img{filter:grayscale(1);opacity:.7}
 
   /* kéo thả */
   .dragging,.dragging *{cursor:grabbing !important;-webkit-user-select:none !important;user-select:none !important}
@@ -165,6 +181,25 @@
   .lockbox .bigbtn{width:auto;padding:7px 16px}
   .who{position:fixed;background:#2b2d33;border:1px solid #5a5e68;color:#dfe1e5;font-size:11px;padding:4px 8px;border-radius:5px;pointer-events:none;z-index:45;display:none;white-space:nowrap}
   .who b{color:var(--neon);font-weight:600}
+  /* ---------- bảng config nút link ---------- */
+  .cfg{max-width:340px}
+  .cfg .crow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #474b55}
+  .cfg .crow:last-of-type{border-bottom:0}
+  .cfg .cic{width:28px;height:28px;border-radius:6px;background:#2b2d33;display:grid;place-items:center;flex:none;color:var(--neon)}
+  .cfg .cic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .cfg .cic img{width:16px;height:16px}
+  .cfg .crow.hid .cic{opacity:.35}
+  .cfg .cname{flex:1;min-width:0;font-size:12.5px}
+  .cfg .cname small{display:block;color:var(--mute);font-size:10.5px}
+  .cfg input.cname{background:#2b2d33;border:1px solid #5a5e68;color:#fff;border-radius:5px;padding:5px 7px;margin:0;outline:none;-webkit-user-select:text;user-select:text}
+  .cfg input.cname:focus{border-color:var(--neon)}
+  .cfg .cb{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:#c9ccd3;background:#454952;flex:none}
+  .cfg .cb:hover{background:#525661}
+  .cfg .cb svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .cfg .cb.del:hover{background:#7a3434}
+  .cfg .addb{display:block;width:100%;margin:10px 0 12px;padding:7px;border-radius:7px;border:1px dashed #6a6e78;color:#c9ccd3;font-size:12px}
+  .cfg .addb:hover{border-color:var(--neon);color:var(--neon)}
+  .cfg .hint{font-size:10.5px;color:var(--mute);margin:-4px 0 10px}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);background:#2b2d33;border:1px solid #5a5e68;padding:6px 12px;border-radius:7px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;z-index:60;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%)}
 </style>
@@ -193,6 +228,7 @@
 
   <main class="canvas">
     <div class="wm">Created by Mondiro</div>
+    <button class="cfgb" id="bCfg" title="Config các nút link" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <div class="scroll view" id="scroll">
       <ul id="list"></ul>
       <div class="empty" id="empty" hidden>Board đang trống<br><button class="ib" id="emptyAdd">＋ Thêm đầu mục</button></div>
@@ -250,6 +286,8 @@
 
 <!-- hộp thoại dùng chung -->
 <div class="veil" id="veil"><div class="dlg" id="dlg"></div></div>
+<div class="veil" id="cfgVeil"><div class="dlg cfg" id="cfg"></div></div>
+<input type="file" id="pngPick" accept="image/png" hidden>
 <div class="toast" id="toast"></div>
 <div class="who" id="who"></div>
 <script src="fb.js"></script>
@@ -270,7 +308,8 @@ function send(type, data) {
 let doc = { items: [] };
 let uid = 0;
 const newId = () => "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + (uid++).toString(36);
-const LINK_KEYS = ["refLink", "taskLink", "gdLink", "kcsLink"];
+const LINK_KEYS = ["refLink", "taskLink", "gdLink", "kcsLink"];   // link của 4 nút mặc định
+const sortObj = o => JSON.stringify(Object.keys(o || {}).sort().map(k => [k, o[k]]));
 
 /* ---- làm sạch HTML: chỉ giữ chữ và xuống dòng ---- */
 function cleanUrl(u) {
@@ -331,8 +370,8 @@ window.addEventListener("blur", () => { if (saveTimer) flush(); });
 
 /* nội dung dùng để so sánh (không tính người sửa / thời gian) */
 function content(it) {
-  return JSON.stringify([it.html, !!it.enabled, LINK_KEYS.map(k => it[k] || ""), it.order,
-    it.children.map(c => [c.id, c.html, !!c.checked])]);
+  return JSON.stringify([it.html, !!it.enabled, LINK_KEYS.map(k => it[k] || ""), sortObj(it.xlinks), it.order,
+    it.children.map(c => [c.id, c.html, !!c.checked, c.link || ""])]);
 }
 /* giữ thứ tự bằng số order tăng dần; mục mới / vừa kéo sẽ được chen vào giữa 2 mục bên cạnh */
 function fixOrders() {
@@ -359,8 +398,8 @@ function fixOrders() {
 }
 function itemData(it) {
   const d = { html: it.html, enabled: !!it.enabled, order: it.order,
-    children: it.children.map(c => ({ id: c.id, html: c.html, checked: !!c.checked, by: c.by || "", at: c.at || 0 })),
-    by: it.by || "", at: it.at || 0 };
+    children: it.children.map(c => ({ id: c.id, html: c.html, checked: !!c.checked, link: c.link || "", by: c.by || "", at: c.at || 0 })),
+    xlinks: it.xlinks || {}, by: it.by || "", at: it.at || 0 };
   LINK_KEYS.forEach(k => d[k] = it[k] || "");
   return d;
 }
@@ -380,10 +419,10 @@ function flush() {
     const old = S.serverItems[it.id];
     const oldKids = {};
     if (old) old.children.forEach(k => oldKids[k.id] = k);
-    let headChanged = !old || old.html !== it.html || !!old.enabled !== !!it.enabled || LINK_KEYS.some(k => (old[k] || "") !== (it[k] || ""));
+    let headChanged = !old || old.html !== it.html || !!old.enabled !== !!it.enabled || LINK_KEYS.some(k => (old[k] || "") !== (it[k] || "")) || sortObj(old.xlinks) !== sortObj(it.xlinks);
     it.children.forEach(k => {
       const o = oldKids[k.id];
-      if (!o || o.html !== k.html || !!o.checked !== !!k.checked) { k.by = me; k.at = now; }
+      if (!o || o.html !== k.html || !!o.checked !== !!k.checked || (o.link || "") !== (k.link || "")) { k.by = me; k.at = now; }
     });
     if (headChanged || !old || old.children.length !== it.children.length) { it.by = me; it.at = now; }
     batch.set(FB.doc(FB_DB, "teams", S.teamId, "items", it.id), itemData(it));
@@ -401,37 +440,68 @@ window.flushNow = () => { if (saveTimer) flush(); return true; };
 /* ================= Vẽ giao diện ================= */
 const $ = s => document.querySelector(s);
 const listEl = $("#list");
-const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg>';
 
 const ICON_REF = '<svg viewBox="0 0 24 24"><mask id="mkRef"><rect width="24" height="24" fill="#fff" stroke="none"/><circle cx="15" cy="15" r="5.6" fill="#000" stroke="none"/></mask><g mask="url(#mkRef)"><rect x="3.5" y="4" width="13" height="17" rx="2"/><path d="M7 3h6v2.6H7z" fill="currentColor"/><path d="M6.8 10h6.5M6.8 13.2h4M6.8 16.4h3"/></g><circle cx="15" cy="15" r="3.9" stroke-width="2"/><path d="M17.9 17.9l3.4 3.4" stroke-width="2.6"/></svg>';
 const ICON_TASK = '<svg viewBox="0 0 24 24"><mask id="mkTask"><rect width="24" height="24" fill="#fff" stroke="none"/><path d="M6.2 8.6l1.9 1.9 3.3-3.7M14.4 8.8h3.6M6.2 15.4l1.9 1.9 3.3-3.7M14.4 15.6h3.6" stroke="#000" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></mask><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="currentColor" stroke="none" mask="url(#mkTask)"/></svg>';
 const ICON_GD = '<svg viewBox="0 0 24 24"><path d="M3.02 14.41A9.3 9.3 0 0 1 15.18 3.26M20.98 9.59A9.3 9.3 0 0 1 8.82 20.74" stroke-width="2.3"/><path d="M17.96 4.63L16.43 1.11L14.18 5.34zM6.04 19.37L7.57 22.89L9.82 18.66z" fill="currentColor" stroke="none"/><path d="M8.2 8h7.6a1.2 1.2 0 0 1 1.2 1.2v4.4a1.2 1.2 0 0 1-1.2 1.2h-4.6l-2.3 2v-2h-.7A1.2 1.2 0 0 1 7 13.6V9.2A1.2 1.2 0 0 1 8.2 8z" stroke-width="1.5"/><path d="M9.6 10.6h4.8M9.6 12.6h3.2" stroke-width="1.3"/></svg>';
 const ICON_KCS = '<svg viewBox="0 0 24 24"><mask id="mkMiro"><rect width="24" height="24" fill="#fff" stroke="none"/><path d="M6.6 6.2l2.7 4.3-2.9 7.4M10.6 6.2l2.7 4.3-2.9 7.4M14.6 6.2l2.7 4.3-2.9 7.4" stroke="#000" stroke-width="2.7" stroke-linecap="butt" stroke-linejoin="miter" fill="none"/></mask><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="currentColor" stroke="none" mask="url(#mkMiro)"/></svg>';
-/* các nút link sau chữ đầu mục, theo thứ tự hiển thị */
+/* 4 nút link mặc định (chỉ ẩn / hiện được, không xoá) */
 const LINKS = {
   ref:  { key: "refLink",  icon: ICON_REF,  name: "Reference animation" },
   task: { key: "taskLink", icon: ICON_TASK, name: "List task" },
   gd:   { key: "gdLink",   icon: ICON_GD,   name: "Feedback Game Designer" },
   kcs:  { key: "kcsLink",  icon: ICON_KCS,  name: "Miro", tip: "Link Miro" },
 };
-function linkBtn(node, kind) {
-  const L = LINKS[kind], url = node[L.key];
-  const title = `${L.tip || L.name}${url ? "" : " (chưa có link)"}\nClick: mở link · Double click: chèn / sửa link`;
-  return `<button class="lk${url ? " set" : ""}" data-act="link" data-kind="${kind}" title="${title}">${L.icon}</button>`;
+/* Bộ nút đang dùng của team: nút mặc định + nút tự thêm (icon PNG). Lưu chung cả team trong
+   teams/{team}/items/_buttons (không có "order" nên không lẫn vào danh sách đầu mục). */
+const BUTTONS_DOC = "_buttons";
+function defaultButtons() { return Object.keys(LINKS).map(id => ({ id, builtin: true, hidden: false })); }
+function normButtons(raw) {
+  const list = [], seen = new Set();
+  for (const b of Array.isArray(raw) ? raw : []) {
+    if (!b || typeof b.id !== "string" || seen.has(b.id)) continue;
+    if (LINKS[b.id]) { list.push({ id: b.id, builtin: true, hidden: !!b.hidden }); seen.add(b.id); }
+    else if (/^c[a-z0-9]+$/i.test(b.id) && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(String(b.icon || ""))) {
+      list.push({ id: b.id, builtin: false, hidden: !!b.hidden, label: String(b.label || "Link").slice(0, 60), icon: b.icon }); seen.add(b.id);
+    }
+  }
+  Object.keys(LINKS).forEach((id, i) => { if (!seen.has(id)) list.splice(Math.min(i, list.length), 0, { id, builtin: true, hidden: false }); });
+  return list;
 }
+let BUTTONS = defaultButtons();
+const btnById = id => BUTTONS.find(b => b.id === id);
+function btnLabel(b) { return b.builtin ? (LINKS[b.id].tip || LINKS[b.id].name) : b.label; }
+function btnIcon(b) { return b.builtin ? LINKS[b.id].icon : `<img src="${b.icon}" alt="">`; }
+function getLink(node, bid) { return LINKS[bid] ? (node[LINKS[bid].key] || "") : ((node.xlinks || {})[bid] || ""); }
+function setLink(node, bid, url) {
+  if (LINKS[bid]) node[LINKS[bid].key] = url;
+  else { node.xlinks = Object.assign({}, node.xlinks); if (url) node.xlinks[bid] = url; else delete node.xlinks[bid]; }
+}
+function linkBtn(node, b) {
+  const url = getLink(node, b.id);
+  const title = `${btnLabel(b)}${url ? "" : " (chưa có link)"}\nClick: mở link · Double click: chèn / sửa link`.replace(/"/g, "&quot;");
+  return `<button class="lk${url ? " set" : ""}" data-act="link" data-kind="${b.id}" title="${title}">${btnIcon(b)}</button>`;
+}
+/* thu gọn mục con: lưu riêng trên máy này */
+let collapsed = new Set();
+function loadCollapsed() { try { collapsed = new Set(JSON.parse(store.get("col." + S.teamId) || "[]")); } catch (_) { collapsed = new Set(); } }
+function saveCollapsed() { store.set("col." + S.teamId, collapsed.size ? JSON.stringify([...collapsed]) : ""); }
+const TW_SVG = '<svg viewBox="0 0 10 10"><path d="M3.5 2l3 3-3 3"/></svg>';
 function rowHtml(node, isKid) {
+  const n = isKid ? 0 : node.children.length;
   const lead = isKid
-    ? `<span class="chk${node.checked ? " ok" : ""}" data-act="check">${CHECK_SVG}</span>`
-    : `<span class="dot ${node.enabled ? "on" : "off"}" data-act="dot" title="Bật / tắt"></span>`;
+    ? `<span class="bul"></span>`
+    : `<button class="tw${n ? "" : " none"}" data-act="toggle" title="Thu gọn / mở mục con">${TW_SVG}</button><span class="dot ${node.enabled ? "on" : "off"}" data-act="dot" title="Bật / tắt"></span>`;
   const acts = isKid
     ? `<button class="ab add" data-act="add" title="Thêm mục con bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`
     : `<button class="ab kid" data-act="kid" title="Thêm mục con">↳</button><button class="ab add" data-act="add" title="Thêm đầu mục bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`;
-  const links = isKid ? "" : `<span class="links">${Object.keys(LINKS).map(k => linkBtn(node, k)).join("")}</span>`;
-  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}<span class="acts">${acts}</span>`;
+  const links = isKid ? "" : `<span class="links">${BUTTONS.filter(b => !b.hidden).map(b => linkBtn(node, b)).join("")}</span>`;
+  const cnt = !isKid && n && collapsed.has(node.id) ? `<span class="cnt" title="${n} mục con đang thu gọn">${n}</span>` : "";
+  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}${cnt}<span class="acts">${acts}</span>`;
 }
 function makeRow(node, isKid, tag) {
   const el = document.createElement(tag);
-  el.className = "row" + (isKid ? " kid" : node.enabled ? "" : " off") + (isKid && node.checked ? " done" : "");
+  el.className = "row" + (isKid ? " kid" : node.enabled ? "" : " off") + (isKid && node.link ? " linked" : "");
   el.dataset.id = node.id;
   el.innerHTML = rowHtml(node, isKid);
   el.querySelector(".txt").innerHTML = node.html;
@@ -441,7 +511,7 @@ let renderedSig = "";
 let pendingRender = false;
 function render(force) {
   if (drag) { pendingRender = true; return; }
-  const sig = JSON.stringify(doc.items.map(i => [i.id, content(i), i.by, i.at, i.children.map(c => [c.by, c.at])]));
+  const sig = JSON.stringify([doc.items.map(i => [i.id, content(i), i.by, i.at, i.children.map(c => [c.by, c.at])]), BUTTONS, [...collapsed]]);
   if (!force && sig === renderedSig) return;
   renderedSig = sig;
   // nhớ dòng đang gõ chữ để giữ nguyên con trỏ sau khi vẽ lại
@@ -451,7 +521,7 @@ function render(force) {
   listEl.innerHTML = "";
   for (const it of doc.items) {
     const g = document.createElement("li");
-    g.className = "group"; g.dataset.id = it.id;
+    g.className = "group" + (it.children.length && collapsed.has(it.id) ? " collapsed" : ""); g.dataset.id = it.id;
     g.appendChild(makeRow(it, false, "div"));
     const ul = document.createElement("ul");
     ul.className = "children";
@@ -501,6 +571,7 @@ function addItemAfter(id) {
 }
 function addKid(parentId, afterId) {
   const p = find(parentId).node;
+  if (collapsed.delete(parentId)) saveCollapsed();
   const n = { id: newId(), html: "", checked: false };
   if (afterId) { const f = find(afterId); p.children.splice(f.index + 1, 0, n); }
   else p.children.push(n);
@@ -527,7 +598,7 @@ function askDelete(id) {
 }
 /* dòng liền trước / liền sau theo thứ tự hiển thị */
 function neighbourId(id, dir) {
-  const rows = Array.from(listEl.querySelectorAll(".row"));
+  const rows = Array.from(listEl.querySelectorAll(".row")).filter(r => r.offsetParent !== null);
   const i = rows.findIndex(r => r.dataset.id === id);
   const r = rows[i + dir];
   return r ? r.dataset.id : null;
@@ -540,13 +611,42 @@ listEl.addEventListener("click", e => {
   switch (a.dataset.act) {
     case "link": linkClick(a, id); break;
     case "dot": f.node.enabled = !f.node.enabled; a.className = "dot " + (f.node.enabled ? "on" : "off"); row.classList.toggle("off", !f.node.enabled); changed(); break;
-    case "check": f.node.checked = !f.node.checked; a.classList.toggle("ok", f.node.checked); row.classList.toggle("done", f.node.checked); changed(); break;
+    case "toggle":
+      if (collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
+      saveCollapsed(); render(true); break;
     case "add": f.parent ? addKid(f.parent.id, id) : addItemAfter(id); break;
     case "del": askDelete(id); break;
     case "kid": addKid(id); break;
   }
 });
-listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.chk,.lk")) e.preventDefault(); });
+listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.tw,.lk")) e.preventDefault(); });
+
+/* mục con có link: Ctrl + Click để mở; double click vào chữ để chèn / sửa link */
+listEl.addEventListener("click", e => {
+  if (!e.ctrlKey) return;
+  const row = e.target.closest(".kid.linked"); if (!row || !e.target.closest(".txt")) return;
+  const f = find(row.dataset.id); if (!f || !f.node.link) return;
+  e.preventDefault(); send("openLink", { url: f.node.link });
+}, true);
+listEl.addEventListener("dblclick", e => {
+  const row = e.target.closest(".kid"); if (!row || !e.target.closest(".txt")) return;
+  e.preventDefault();
+  editKidLink(row.dataset.id);
+});
+function editKidLink(id) {
+  const f0 = find(id); if (!f0) return;
+  const cur = f0.node.link || "";
+  const save = url => { const f = find(id); if (!f) { toast("Mục này vừa bị xoá"); return; } f.node.link = url; render(true); changed(); };
+  const buttons = [{ label: "Huỷ" }];
+  if (cur) buttons.push({ label: "Xoá link", run: () => save("") });
+  buttons.push({ label: "Lưu", cls: "primary", def: true, run: v => {
+    const url = cleanUrl(v);
+    if (!url && v.trim()) { toast("Link không hợp lệ"); return; }
+    save(url);
+  }});
+  dialog({ title: "Link cho mục con", text: plain(f0.node.html) || "(mục con trống)",
+    input: { value: cur, placeholder: "https://… hoặc D:\\Project\\..." }, buttons });
+}
 
 /* nút link: click 1 lần = mở link, double click = chèn / sửa link (chờ một chút để phân biệt) */
 let lkTimer = 0, lkLast = null;
@@ -561,15 +661,16 @@ function linkClick(btn, id) {
   lkTimer = setTimeout(() => {
     lkTimer = 0; lkLast = null;
     const f = find(id); if (!f) return;
-    const url = f.node[LINKS[kind].key];
+    const url = getLink(f.node, kind);
     if (url) send("openLink", { url });
     else toast("Chưa có link · double click để chèn");
   }, 260);
 }
 function editLink(id, kind) {
   const f0 = find(id); if (!f0) return;
-  const L = LINKS[kind], cur = f0.node[L.key] || "", title = plain(f0.node.html);
-  const save = url => { const f = find(id); if (!f) { toast("Đầu mục này vừa bị xoá"); return; } f.node[L.key] = url; render(true); changed(); };
+  const b = btnById(kind) || { id: kind, builtin: !!LINKS[kind], label: "Link" };
+  const cur = getLink(f0.node, kind), title = plain(f0.node.html), L = { name: btnLabel(b) };
+  const save = url => { const f = find(id); if (!f) { toast("Đầu mục này vừa bị xoá"); return; } setLink(f.node, kind, url); render(true); changed(); };
   const buttons = [{ label: "Huỷ" }];
   if (cur) buttons.push({ label: "Xoá link", run: () => save("") });
   buttons.push({ label: "Lưu", cls: "primary", def: true, run: v => {
@@ -643,7 +744,7 @@ const scrollEl = $("#scroll");
 
 listEl.addEventListener("pointerdown", e => {
   if (e.button !== 0 || drag) return;
-  if (e.target.closest(".ab,.dot,.chk,.lk")) return;
+  if (e.target.closest(".ab,.dot,.tw,.lk")) return;
   const row = e.target.closest(".row"); if (!row) return;
   const txt = row.querySelector(".txt");
   const x = e.clientX, y = e.clientY;
@@ -663,7 +764,10 @@ window.addEventListener("pointermove", e => {
 });
 window.addEventListener("pointerup", e => {
   cancelHold();
-  if (press) { const p = press; press = null; placeCaret(p.txt, e.clientX, e.clientY); }
+  if (press) {
+    const p = press; press = null;
+    if (!(e.ctrlKey && p.row.classList.contains("linked"))) placeCaret(p.txt, e.clientX, e.clientY);
+  }
   if (drag) endDrag();
 });
 window.addEventListener("pointercancel", () => { cancelHold(); press = null; if (drag) endDrag(); });
@@ -883,6 +987,7 @@ const store = {
 function show(view) {
   ["scroll", "vJoin", "vLogin", "vAdmin", "vLock"].forEach(v => $("#" + v).classList.toggle("show", v === view));
   $("#bBack").hidden = !(S.admin && view === "scroll");
+  $("#bCfg").hidden = view !== "scroll";
   $("#bLogout").hidden = !(S.admin && view === "vAdmin");
 }
 function setChip(text, admin) {
@@ -975,8 +1080,9 @@ $("#jCode").addEventListener("input", e => { const p = e.target.selectionStart; 
 
 function stopTeam() {
   if (saveTimer) flush();
-  if (S.unsubItems) S.unsubItems(); if (S.unsubTeam) S.unsubTeam();
-  S.unsubItems = S.unsubTeam = null;
+  if (S.unsubItems) S.unsubItems(); if (S.unsubTeam) S.unsubTeam(); if (S.unsubButtons) S.unsubButtons();
+  S.unsubItems = S.unsubTeam = S.unsubButtons = null;
+  BUTTONS = defaultButtons(); collapsed = new Set();
   S.teamId = null; S.serverItems = {}; synced = {}; doc = { items: [] }; renderedSig = "";
   listEl.innerHTML = "";
 }
@@ -992,11 +1098,21 @@ function openTeam(teamId, name) {
     const t = snap.data();
     S.teamName = t.name || "Team";
     setChip(S.teamName, S.admin);
-    if (t.locked && !S.admin) { if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; } showLock("locked"); }
+    if (t.locked && !S.admin) { stopListening(); showLock("locked"); }
     else if (!S.unsubItems) { show("scroll"); listenItems(); }
   }, err => { if (!S.admin) showLock("code"); else toast(errText(err)); });
 }
+function stopListening() {
+  if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; }
+  if (S.unsubButtons) { S.unsubButtons(); S.unsubButtons = null; }
+}
 function listenItems() {
+  loadCollapsed();
+  const bref = FB.doc(FB_DB, "teams", S.teamId, "items", BUTTONS_DOC);
+  S.unsubButtons = FB.onSnapshot(bref, snap => {
+    BUTTONS = normButtons(snap.exists() ? snap.data().buttons : null);
+    render();
+  }, () => {});
   const q = FB.query(FB.collection(FB_DB, "teams", S.teamId, "items"), FB.orderBy("order"));
   S.unsubItems = FB.onSnapshot(q, { includeMetadataChanges: true }, snap => {
     setSync(!snap.metadata.fromCache);
@@ -1014,8 +1130,11 @@ function applySnapshot(snap) {
     const it = { id: d.id, html: sanitize(String(x.html || "")), enabled: !!x.enabled, order: x.order,
       by: x.by || "", at: x.at || 0,
       children: (Array.isArray(x.children) ? x.children : []).map(c => ({
-        id: String(c.id || newId()), html: sanitize(String(c.html || "")), checked: !!c.checked, by: c.by || "", at: c.at || 0 })) };
+        id: String(c.id || newId()), html: sanitize(String(c.html || "")), checked: !!c.checked,
+        link: cleanUrl(String(c.link || "")), by: c.by || "", at: c.at || 0 })) };
     LINK_KEYS.forEach(k => it[k] = cleanUrl(String(x[k] || "")));
+    it.xlinks = {};
+    if (x.xlinks && typeof x.xlinks === "object") for (const k of Object.keys(x.xlinks)) { const u = cleanUrl(String(x.xlinks[k] || "")); if (u) it.xlinks[k] = u; }
     items.push(it);
     S.serverItems[it.id] = JSON.parse(JSON.stringify(it));
     synced[it.id] = content(it);
@@ -1036,7 +1155,7 @@ function onSyncError(err) {
   if (err && err.code === "permission-denied") {
     if (S.admin) { toast("Không có quyền ghi"); return; }
     // bị khóa hoặc mã đã đổi → listener team sẽ báo đúng lý do
-    if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; }
+    stopListening();
     showLock("checking");
     return;
   }
@@ -1046,7 +1165,7 @@ function showLock(kind) {
   if (kind === "checking") { $("#lockTitle").textContent = "Không truy cập được board"; $("#lockText").innerHTML = "Đang kiểm tra lại quyền truy cập…"; }
   else if (kind === "locked") { $("#lockTitle").textContent = "Team đã bị khóa"; $("#lockText").innerHTML = "Board tạm thời không truy cập được.<br>Liên hệ quản lý để được mở lại."; }
   else { $("#lockTitle").textContent = "Mã team đã được đổi"; $("#lockText").innerHTML = "Mã bạn đang dùng không còn hiệu lực.<br>Liên hệ quản lý để nhận mã mới."; }
-  if (kind === "code") { if (S.unsubTeam) { S.unsubTeam(); S.unsubTeam = null; } if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; } }
+  if (kind === "code") { if (S.unsubTeam) { S.unsubTeam(); S.unsubTeam = null; } stopListening(); }
   setChip(""); show("vLock");
 }
 $("#lockOther").onclick = () => { stopTeam(); store.set("code", ""); $("#jCode").value = ""; showJoinError(""); setChip(""); show("vJoin"); };
@@ -1060,6 +1179,90 @@ function askLeave() {
       if (t && S.user) FB.deleteDoc(FB.doc(FB_DB, "teams", t, "members", S.user.uid)).catch(() => {});
       store.set("code", ""); store.set("teamId", ""); $("#jCode").value = ""; showJoinError(""); setChip(""); show("vJoin");
     } }] });
+}
+
+/* ---------- bảng config nút link (chung cả team) ---------- */
+const cfgVeil = $("#cfgVeil"), cfgBox = $("#cfg");
+const EYE = '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 6.6C3.8 8.4 2 12 2 12s3.5 6 10 6c1.6 0 3-.3 4.3-.9"/></svg>';
+const IMG_ICON = '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 9"/></svg>';
+const TRASH = '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+const MAX_CUSTOM = 8;
+let cfgWork = null, pngTarget = null;
+
+$("#bCfg").onclick = () => {
+  if (!S.teamId) return;
+  cfgWork = BUTTONS.map(b => Object.assign({}, b));
+  renderCfg(); cfgVeil.classList.add("show");
+};
+function renderCfg() {
+  cfgBox.innerHTML = `<h3>Các nút link</h3><p class="hint">Áp dụng cho cả team. 4 nút mặc định chỉ ẩn / hiện được. Icon tự thêm: file PNG, tự thu về đúng cỡ icon.</p><div id="cfgList"></div>
+    <button class="addb" id="cfgAdd">＋ Thêm nút mới (chọn icon PNG)</button>
+    <div class="bt"><button id="cfgCancel">Huỷ</button><button class="primary" id="cfgSave">Lưu</button></div>`;
+  const list = cfgBox.querySelector("#cfgList");
+  cfgWork.forEach((b, i) => {
+    const r = document.createElement("div");
+    r.className = "crow" + (b.hidden ? " hid" : "");
+    r.innerHTML = `<span class="cic">${btnIcon(b)}</span>` +
+      (b.builtin ? `<span class="cname"></span>` : `<input class="cname" maxlength="60" spellcheck="false" placeholder="Tooltip của nút">`) +
+      `<button class="cb" data-c="eye" title="${b.hidden ? "Đang ẩn · bấm để hiện" : "Đang hiện · bấm để ẩn"}">${b.hidden ? EYE_OFF : EYE}</button>` +
+      (b.builtin ? "" : `<button class="cb" data-c="icon" title="Đổi icon PNG">${IMG_ICON}</button><button class="cb del" data-c="del" title="Xoá nút">${TRASH}</button>`);
+    if (b.builtin) { const n = r.querySelector(".cname"); n.textContent = btnLabel(b); const sm = document.createElement("small"); sm.textContent = "Mặc định"; n.appendChild(sm); }
+    else { const inp = r.querySelector("input"); inp.value = b.label; inp.oninput = () => b.label = inp.value; }
+    r.addEventListener("click", e => {
+      const c = e.target.closest("[data-c]"); if (!c) return;
+      if (c.dataset.c === "eye") { b.hidden = !b.hidden; renderCfg(); }
+      else if (c.dataset.c === "icon") { pngTarget = b; $("#pngPick").click(); }
+      else if (c.dataset.c === "del") { cfgWork.splice(i, 1); renderCfg(); }
+    });
+    list.appendChild(r);
+  });
+  cfgBox.querySelector("#cfgAdd").onclick = () => {
+    if (cfgWork.filter(b => !b.builtin).length >= MAX_CUSTOM) { toast("Tối đa " + MAX_CUSTOM + " nút tự thêm"); return; }
+    pngTarget = null; $("#pngPick").click();
+  };
+  cfgBox.querySelector("#cfgCancel").onclick = closeCfg;
+  cfgBox.querySelector("#cfgSave").onclick = saveCfg;
+}
+function closeCfg() { cfgVeil.classList.remove("show"); cfgWork = null; }
+cfgVeil.addEventListener("mousedown", e => { if (e.target === cfgVeil) closeCfg(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && cfgVeil.classList.contains("show") && !veil.classList.contains("show")) closeCfg(); });
+
+/* đọc PNG, thu về 32×32 (hiển thị 16×16 như icon hiện tại) */
+$("#pngPick").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0]; e.target.value = "";
+  if (!file || !cfgWork) return;
+  if (!/png$/i.test(file.type) && !/\.png$/i.test(file.name)) { toast("Chỉ nhận file PNG"); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = c.height = 32;
+      const g = c.getContext("2d"), k = Math.min(32 / img.width, 32 / img.height);
+      const w = img.width * k, h = img.height * k;
+      g.imageSmoothingQuality = "high";
+      g.drawImage(img, (32 - w) / 2, (32 - h) / 2, w, h);
+      const data = c.toDataURL("image/png");
+      if (pngTarget) pngTarget.icon = data;
+      else cfgWork.push({ id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), builtin: false, hidden: false,
+        label: file.name.replace(/\.png$/i, "").slice(0, 60) || "Link mới", icon: data });
+      renderCfg();
+      if (!pngTarget) { const ins = cfgBox.querySelectorAll("input.cname"); if (ins.length) { ins[ins.length - 1].focus(); ins[ins.length - 1].select(); } }
+    };
+    img.onerror = () => toast("Không đọc được ảnh PNG này");
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+});
+async function saveCfg() {
+  if (!S.teamId || !cfgWork) return;
+  const buttons = cfgWork.map(b => b.builtin ? { id: b.id, hidden: !!b.hidden }
+    : { id: b.id, hidden: !!b.hidden, label: (b.label || "").trim() || "Link", icon: b.icon });
+  const me = S.admin ? "Admin" : (S.name || "?");
+  closeCfg();
+  BUTTONS = normButtons(buttons); render(true);
+  try { await FB.setDoc(FB.doc(FB_DB, "teams", S.teamId, "items", BUTTONS_DOC), { buttons, by: me, at: Date.now() }); toast("Đã lưu các nút link"); }
+  catch (err) { toast(errText(err)); }
 }
 
 /* ---------- ai sửa: rê chuột vào dòng ---------- */
@@ -1078,11 +1281,16 @@ listEl.addEventListener("mouseover", e => {
   clearTimeout(whoT); whoEl.style.display = "none";
   if (!row || drag) return;
   whoT = setTimeout(() => {
-    const f = find(row.dataset.id); if (!f || !f.node.by || drag) return;
+    const f = find(row.dataset.id); if (!f || drag) return;
+    const hasLink = !f.parent ? false : !!f.node.link;
+    if (!f.node.by && !hasLink) return;
     whoEl.innerHTML = "";
-    whoEl.append("Sửa bởi ");
-    const b = document.createElement("b"); b.textContent = f.node.by; whoEl.append(b);
-    if (f.node.at) whoEl.append(" · " + ago(f.node.at));
+    if (f.node.by) {
+      whoEl.append("Sửa bởi ");
+      const b = document.createElement("b"); b.textContent = f.node.by; whoEl.append(b);
+      if (f.node.at) whoEl.append(" · " + ago(f.node.at));
+    }
+    if (hasLink) whoEl.append((f.node.by ? "  ·  " : "") + "Ctrl+Click để mở link");
     const r = row.querySelector(".txt").getBoundingClientRect();
     whoEl.style.display = "block";
     whoEl.style.left = Math.max(4, Math.min(r.left, innerWidth - whoEl.offsetWidth - 4)) + "px";
