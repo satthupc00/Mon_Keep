@@ -26,6 +26,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <EmbeddedResource Include="Web\index.html" LogicalName="GlowBoard.index.html" />
+    <EmbeddedResource Include="Web\fb.js" LogicalName="GlowBoard.fb.js" />
     <EmbeddedResource Include="Assets\GlowBoard.ico" LogicalName="GlowBoard.icon.ico" />
   </ItemGroup>
   <ItemGroup>

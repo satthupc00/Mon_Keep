@@ -23,6 +23,7 @@
     --danger:#d64545;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none !important}
   html,body{height:100%;margin:0}
   body{background:var(--bg);color:var(--txt);font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;overflow:hidden;-webkit-user-select:none;user-select:none}
   button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
@@ -118,6 +119,49 @@
   .dlg .bt .primary{background:#2f8a50;color:#fff}
   .dlg input{width:100%;background:#2b2d33;border:1px solid #5a5e68;color:#fff;border-radius:6px;padding:7px 8px;font-size:12.5px;margin-bottom:12px;outline:none;-webkit-user-select:text;user-select:text}
   .dlg input:focus{border-color:var(--neon)}
+  /* ---------- team ---------- */
+  .chip{display:inline-flex;align-items:center;gap:4px;background:#2f3a33;color:var(--neon);border-radius:9px;padding:0 7px;font-size:10px;font-weight:600;margin-right:6px;vertical-align:1px;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  .chip.admin{background:#4a3d22;color:#ffd34d}
+  .chip .sync{width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none;transition:background .3s}
+  .chip .sync.off{background:#8a8e97}
+  .view{position:absolute;inset:0;overflow:auto;padding:12px 10px 40px;display:none}
+  .view.show{display:block}
+  .card{background:#3c3f46;border:1px solid var(--line);border-radius:10px;padding:16px;margin:26px auto 0;max-width:330px}
+  .card h3{margin:0 0 4px;font-size:15px}
+  .card p{margin:0 0 14px;color:var(--mute);font-size:12px;line-height:1.5}
+  .card label{display:block;font-size:11px;color:var(--mute);margin:0 0 4px}
+  .fin{width:100%;background:#2b2d33;border:1px solid #5a5e68;border-radius:6px;padding:8px;font-size:13px;margin-bottom:12px;color:#fff;outline:none;font-family:inherit;-webkit-user-select:text;user-select:text}
+  .fin:focus{border-color:var(--neon)}
+  .fin.code{font-family:Consolas,monospace;letter-spacing:.12em;font-size:15px;text-align:center;text-transform:uppercase}
+  .bigbtn{display:block;width:100%;text-align:center;padding:8px;border-radius:7px;background:#2f8a50;font-size:13px;font-weight:600;color:#fff}
+  .bigbtn:hover{background:#36a05d}
+  .bigbtn:disabled{opacity:.5;cursor:default}
+  .err{color:#ff9b9b;font-size:12px;min-height:16px;margin:-4px 0 8px}
+  .small{font-size:11px;color:var(--mute);text-align:center;margin-top:12px}
+  .small button{color:#dfe1e5;text-decoration:underline;font-size:11px}
+  .adm h4{margin:2px 0 8px;font-size:12px;color:var(--mute);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .adm .new{background:#2f8a50;color:#fff;font-size:11px;padding:3px 9px;border-radius:6px}
+  .team{background:#3c3f46;border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-bottom:8px}
+  .team.locked{opacity:.8}
+  .team .n{font-weight:700;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+  .st{font-size:10px;padding:1px 7px;border-radius:8px;background:#2f3a33;color:var(--neon);font-weight:600;white-space:nowrap}
+  .st.lock{background:#4a2f2f;color:#ff9b9b}
+  .codeline{font-family:Consolas,monospace;font-size:13px;letter-spacing:.08em;margin:5px 0;display:flex;align-items:center;gap:8px}
+  .codeline button{font-family:"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:0;color:var(--mute);font-size:10.5px}
+  .codeline button:hover{color:#fff}
+  .codeline small{font-family:"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:0;color:var(--mute);font-size:10.5px}
+  .tacts{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+  .tacts button{font-size:11px;padding:3px 8px;border-radius:5px;background:var(--btn)}
+  .tacts button:hover{background:var(--btn-h)}
+  .tacts .r{background:#6b3434}.tacts .r:hover{background:#7d3d3d}
+  .tacts .g{background:#2f6d45}.tacts .g:hover{background:#38804f}
+  .lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:24px}
+  .lockbox .ic{font-size:34px}
+  .lockbox h3{margin:10px 0 6px;font-size:15px}
+  .lockbox p{color:var(--mute);font-size:12px;line-height:1.5;margin:0 0 14px}
+  .lockbox .bigbtn{width:auto;padding:7px 16px}
+  .who{position:fixed;background:#2b2d33;border:1px solid #5a5e68;color:#dfe1e5;font-size:11px;padding:4px 8px;border-radius:5px;pointer-events:none;z-index:45;display:none;white-space:nowrap}
+  .who b{color:var(--neon);font-weight:600}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);background:#2b2d33;border:1px solid #5a5e68;padding:6px 12px;border-radius:7px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;z-index:60;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%)}
 </style>
@@ -133,12 +177,11 @@
     </svg>
     <div class="brand">
       <div class="t"><span class="m">Mondiro</span> GlowBoard</div>
-      <div class="d">Keep what you want</div>
+      <div class="d"><span class="chip" id="chip" hidden><span class="sync" id="sync"></span><span id="chipName"></span></span><span id="sub">Keep what you want</span></div>
     </div>
     <div class="win">
-      <button class="ib icon" id="bNew" title="Board mới (Ctrl+N)"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/></svg></button>
-      <button class="ib icon" id="bOpen" title="Mở board (Ctrl+O)"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
-      <button class="ib icon" id="bSave" title="Lưu (Ctrl+S) · Chuột phải: Lưu thành…"><svg viewBox="0 0 24 24"><path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg></button>
+      <button class="ib icon" id="bBack" title="Về danh sách team" hidden><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="ib icon" id="bLogout" title="Thoát chế độ Admin" hidden><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></button>
       <button class="ib icon" id="bTop" title="Luôn nằm trên cùng: đang tắt"><svg viewBox="0 0 24 24"><path d="M9 3h6l-1 6 3.5 3.5v1.5h-11v-1.5L10 9z"/><path d="M12 14v7"/></svg></button>
       <button class="ib icon" id="bHide" title="Thu xuống khay hệ thống"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
     </div>
@@ -146,10 +189,56 @@
 
   <main class="canvas">
     <div class="wm">Created by Mondiro</div>
-    <div class="scroll" id="scroll">
+    <div class="scroll view" id="scroll">
       <ul id="list"></ul>
       <div class="empty" id="empty" hidden>Board đang trống<br><button class="ib" id="emptyAdd">＋ Thêm đầu mục</button></div>
     </div>
+
+    <!-- nhập mã team -->
+    <section class="view" id="vJoin">
+      <div class="card">
+        <h3>Vào board của team</h3>
+        <p>Nhập mã team do quản lý gửi cho bạn.</p>
+        <label for="jCode">Mã team</label>
+        <input class="fin code" id="jCode" spellcheck="false" autocomplete="off" placeholder="VD: DRAGON-7K2XQ9">
+        <label for="jName">Tên hiển thị của bạn</label>
+        <input class="fin" id="jName" spellcheck="false" autocomplete="off" maxlength="40" placeholder="VD: Lan">
+        <div class="err" id="jErr"></div>
+        <button class="bigbtn" id="jGo">Vào team</button>
+      </div>
+      <div class="small">Bạn là quản lý? <button id="toLogin">Đăng nhập Admin</button></div>
+    </section>
+
+    <!-- đăng nhập admin -->
+    <section class="view" id="vLogin">
+      <div class="card">
+        <h3>Đăng nhập Admin</h3>
+        <p>Chỉ dành cho quản lý: tạo team, đổi mã, khóa team.</p>
+        <label for="lEmail">Email</label>
+        <input class="fin" id="lEmail" type="email" spellcheck="false" autocomplete="off">
+        <label for="lPass">Mật khẩu</label>
+        <input class="fin" id="lPass" type="password">
+        <div class="err" id="lErr"></div>
+        <button class="bigbtn" id="lGo">Đăng nhập</button>
+      </div>
+      <div class="small"><button id="loginBack">← Quay lại</button></div>
+    </section>
+
+    <!-- admin: danh sách team -->
+    <section class="view adm" id="vAdmin">
+      <h4><span id="aCount">Đang tải…</span><button class="new" id="aNew">＋ Tạo team</button></h4>
+      <div id="aList"></div>
+    </section>
+
+    <!-- team bị khóa / đổi mã -->
+    <section class="view" id="vLock">
+      <div class="lockbox">
+        <div class="ic">🔒</div>
+        <h3 id="lockTitle">Team đã bị khóa</h3>
+        <p id="lockText">Board tạm thời không truy cập được.<br>Liên hệ quản lý để được mở lại hoặc nhận mã mới.</p>
+        <button class="bigbtn" id="lockOther">Nhập mã khác</button>
+      </div>
+    </section>
   </main>
 
 </div>
@@ -158,6 +247,8 @@
 <!-- hộp thoại dùng chung -->
 <div class="veil" id="veil"><div class="dlg" id="dlg"></div></div>
 <div class="toast" id="toast"></div>
+<div class="who" id="who"></div>
+<script src="fb.js"></script>
 
 <script>
 "use strict";
@@ -170,28 +261,12 @@ function send(type, data) {
 }
 
 /* ================= Dữ liệu ================= */
-const FILE_APP = "Mondiro GlowBoard";
+/* Board của team nằm trên Firebase (Firestore): mỗi đầu mục là 1 document trong teams/{teamId}/items,
+   mục con nằm trong mảng children của đầu mục. Thay đổi được gom lại rồi ghi lên sau ~0.4 giây. */
 let doc = { items: [] };
-let fileName = null;          // tên file đang mở (null = board chưa lưu thành file)
 let uid = 0;
-const newId = () => "n" + Date.now().toString(36) + (uid++).toString(36);
-
-function sampleDoc() {
-  const it = (html, enabled, children) => ({ id: newId(), html, enabled, refLink: "", taskLink: "", children: children || [] });
-  const ch = (html, checked) => ({ id: newId(), html, checked: !!checked });
-  return { items: [
-    it("Chào mừng đến với GlowBoard", true, [
-      ch("Click vào chấm tròn để bật / tắt đầu mục", true),
-      ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự"),
-      ch("Rê chuột vào dòng để thấy nút ↳ ＋ −"),
-    ]),
-    it("Các nút sau chữ: Reference, List task, Feedback GD, Miro", false, [
-      ch("Double click vào nút để chèn link"),
-      ch("Click 1 lần để mở link"),
-    ]),
-    it("Kéo các cạnh cửa sổ để mở rộng board", false),
-  ]};
-}
+const newId = () => "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + (uid++).toString(36);
+const LINK_KEYS = ["refLink", "taskLink", "gdLink", "kcsLink"];
 
 /* ---- làm sạch HTML: chỉ giữ chữ và xuống dòng ---- */
 function cleanUrl(u) {
@@ -230,25 +305,6 @@ function firstLink(html) {
 }
 function plain(html) { const d = document.createElement("div"); d.innerHTML = html; return d.textContent.trim(); }
 
-function normalizeDoc(raw) {
-  if (!raw || !Array.isArray(raw.items)) throw new Error("File không phải board GlowBoard");
-  return { items: raw.items.map(i => ({
-    id: newId(), html: sanitize(String(i.html || "")), enabled: !!i.enabled,
-    refLink: cleanUrl(String(i.refLink || "")) || firstLink(i.html), taskLink: cleanUrl(String(i.taskLink || "")),
-    gdLink: cleanUrl(String(i.gdLink || "")), kcsLink: cleanUrl(String(i.kcsLink || "")),
-    children: (Array.isArray(i.children) ? i.children : []).map(c => ({
-      id: newId(), html: sanitize(String(c.html || "")), checked: !!c.checked,
-    })),
-  }))};
-}
-function serialize() {
-  return JSON.stringify({ app: FILE_APP, version: 1, items: doc.items.map(i => ({
-    html: i.html, enabled: i.enabled, refLink: i.refLink || "", taskLink: i.taskLink || "",
-    gdLink: i.gdLink || "", kcsLink: i.kcsLink || "",
-    children: i.children.map(c => ({ html: c.html, checked: c.checked })),
-  }))}, null, 1);
-}
-
 function find(id) {
   for (let i = 0; i < doc.items.length; i++) {
     const it = doc.items[i];
@@ -259,17 +315,84 @@ function find(id) {
   return null;
 }
 
-/* ---- tự động lưu ---- */
+/* ---- đồng bộ lên Firebase ---- */
 let saveTimer = 0;
+let synced = {};          // id đầu mục → nội dung đã có trên server (để biết cái nào cần ghi)
 function changed() {
+  if (!S.teamId) return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(flush, 500);
+  saveTimer = setTimeout(flush, 400);
+}
+window.addEventListener("blur", () => { if (saveTimer) flush(); });
+
+/* nội dung dùng để so sánh (không tính người sửa / thời gian) */
+function content(it) {
+  return JSON.stringify([it.html, !!it.enabled, LINK_KEYS.map(k => it[k] || ""), it.order,
+    it.children.map(c => [c.id, c.html, !!c.checked])]);
+}
+/* giữ thứ tự bằng số order tăng dần; mục mới / vừa kéo sẽ được chen vào giữa 2 mục bên cạnh */
+function fixOrders() {
+  const items = doc.items;
+  let prev = -Infinity;
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    if (typeof it.order === "number" && it.order > prev) {
+      let ok = true;   // không được lớn hơn mục phía sau đã có thứ tự đúng
+      for (let j = i + 1; j < items.length; j++) {
+        const o = items[j].order;
+        if (typeof o === "number" && o > prev) { ok = it.order < o; break; }
+      }
+      if (ok) { prev = it.order; continue; }
+    }
+    let next = null;
+    for (let j = i + 1; j < items.length; j++) {
+      const o = items[j].order;
+      if (typeof o === "number" && o > prev) { next = o; break; }
+    }
+    it.order = next != null ? (prev === -Infinity ? next - 1 : (prev + next) / 2) : (prev === -Infinity ? 0 : prev + 1);
+    prev = it.order;
+  }
+}
+function itemData(it) {
+  const d = { html: it.html, enabled: !!it.enabled, order: it.order,
+    children: it.children.map(c => ({ id: c.id, html: c.html, checked: !!c.checked, by: c.by || "", at: c.at || 0 })),
+    by: it.by || "", at: it.at || 0 };
+  LINK_KEYS.forEach(k => d[k] = it[k] || "");
+  return d;
 }
 function flush() {
   clearTimeout(saveTimer); saveTimer = 0;
-  send("autosave", { text: serialize() });
+  if (!S.teamId || !FB_DB) return;
+  fixOrders();
+  const me = S.admin ? "Admin" : (S.name || "?"), now = Date.now();
+  const batch = FB.writeBatch(FB_DB);
+  let n = 0;
+  const alive = new Set();
+  for (const it of doc.items) {
+    alive.add(it.id);
+    const c = content(it);
+    if (synced[it.id] === c) continue;
+    // đánh dấu người sửa: đầu mục, và từng mục con có thay đổi
+    const old = S.serverItems[it.id];
+    const oldKids = {};
+    if (old) old.children.forEach(k => oldKids[k.id] = k);
+    let headChanged = !old || old.html !== it.html || !!old.enabled !== !!it.enabled || LINK_KEYS.some(k => (old[k] || "") !== (it[k] || ""));
+    it.children.forEach(k => {
+      const o = oldKids[k.id];
+      if (!o || o.html !== k.html || !!o.checked !== !!k.checked) { k.by = me; k.at = now; }
+    });
+    if (headChanged || !old || old.children.length !== it.children.length) { it.by = me; it.at = now; }
+    batch.set(FB.doc(FB_DB, "teams", S.teamId, "items", it.id), itemData(it));
+    synced[it.id] = c; n++;
+  }
+  for (const id of Object.keys(synced)) {
+    if (alive.has(id)) continue;
+    batch.delete(FB.doc(FB_DB, "teams", S.teamId, "items", id));
+    delete synced[id]; n++;
+  }
+  if (n) batch.commit().catch(err => onSyncError(err));
 }
-window.addEventListener("blur", () => { if (saveTimer) flush(); });
+window.flushNow = () => { if (saveTimer) flush(); return true; };
 
 /* ================= Vẽ giao diện ================= */
 const $ = s => document.querySelector(s);
@@ -310,7 +433,17 @@ function makeRow(node, isKid, tag) {
   el.querySelector(".txt").innerHTML = node.html;
   return el;
 }
-function render() {
+let renderedSig = "";
+let pendingRender = false;
+function render(force) {
+  if (drag) { pendingRender = true; return; }
+  const sig = JSON.stringify(doc.items.map(i => [i.id, content(i), i.by, i.at, i.children.map(c => [c.by, c.at])]));
+  if (!force && sig === renderedSig) return;
+  renderedSig = sig;
+  // nhớ dòng đang gõ chữ để giữ nguyên con trỏ sau khi vẽ lại
+  const act = document.activeElement && document.activeElement.closest ? document.activeElement.closest(".txt") : null;
+  const actId = act ? act.closest(".row").dataset.id : null;
+  const caret = act ? caretOffset(act) : 0;
   listEl.innerHTML = "";
   for (const it of doc.items) {
     const g = document.createElement("li");
@@ -323,6 +456,26 @@ function render() {
     listEl.appendChild(g);
   }
   $("#empty").hidden = doc.items.length > 0;
+  if (actId) {
+    const r = rowEl(actId);
+    if (r) { const t = r.querySelector(".txt"); t.focus(); setCaretOffset(t, caret); }
+  }
+}
+function caretOffset(el) {
+  const sel = getSelection(); if (!sel.rangeCount) return 0;
+  const r = sel.getRangeAt(0).cloneRange(); r.selectNodeContents(el);
+  try { r.setEnd(sel.getRangeAt(0).endContainer, sel.getRangeAt(0).endOffset); } catch (_) { return 0; }
+  return r.toString().length;
+}
+function setCaretOffset(el, n) {
+  const sel = getSelection(), rg = document.createRange();
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let node, left = n;
+  while ((node = w.nextNode())) {
+    if (left <= node.length) { rg.setStart(node, left); rg.collapse(true); sel.removeAllRanges(); sel.addRange(rg); return; }
+    left -= node.length;
+  }
+  rg.selectNodeContents(el); rg.collapse(false); sel.removeAllRanges(); sel.addRange(rg);
 }
 function rowEl(id) { return listEl.querySelector(`.row[data-id="${id}"]`); }
 function focusRow(id, atEnd) {
@@ -334,28 +487,25 @@ function focusRow(id, atEnd) {
   sel.removeAllRanges(); sel.addRange(rg);
   r.scrollIntoView({ block: "nearest" });
 }
-function updateStatus(text) {
-  document.title = "Mondiro GlowBoard" + (fileName ? " – " + fileName : "");
-}
 
 /* ================= Thao tác dữ liệu ================= */
 function addItemAfter(id) {
-  const n = { id: newId(), html: "", enabled: true, refLink: "", taskLink: "", children: [] };
+  const n = { id: newId(), html: "", enabled: true, children: [] };
   if (id == null) doc.items.push(n);
   else { const f = find(id); doc.items.splice((f.parent ? doc.items.indexOf(f.parent) : f.index) + 1, 0, n); }
-  render(); changed(); focusRow(n.id);
+  render(true); changed(); focusRow(n.id);
 }
 function addKid(parentId, afterId) {
   const p = find(parentId).node;
   const n = { id: newId(), html: "", checked: false };
   if (afterId) { const f = find(afterId); p.children.splice(f.index + 1, 0, n); }
   else p.children.push(n);
-  render(); changed(); focusRow(n.id);
+  render(true); changed(); focusRow(n.id);
 }
 function removeNode(id) {
   const f = find(id); if (!f) return null;
   f.list.splice(f.index, 1);
-  render(); changed();
+  render(true); changed();
   return f;
 }
 function askDelete(id) {
@@ -384,7 +534,7 @@ listEl.addEventListener("click", e => {
   const a = e.target.closest("[data-act]"); if (!a) return;
   const row = a.closest(".row"), id = row.dataset.id, f = find(id);
   switch (a.dataset.act) {
-    case "link": linkClick(a, f.node); break;
+    case "link": linkClick(a, id); break;
     case "dot": f.node.enabled = !f.node.enabled; a.className = "dot " + (f.node.enabled ? "on" : "off"); row.classList.toggle("off", !f.node.enabled); changed(); break;
     case "check": f.node.checked = !f.node.checked; a.classList.toggle("ok", f.node.checked); row.classList.toggle("done", f.node.checked); changed(); break;
     case "add": f.parent ? addKid(f.parent.id, id) : addItemAfter(id); break;
@@ -396,24 +546,26 @@ listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.chk,
 
 /* nút link: click 1 lần = mở link, double click = chèn / sửa link (chờ một chút để phân biệt) */
 let lkTimer = 0, lkLast = null;
-function linkClick(btn, node) {
-  const kind = btn.dataset.kind;
-  if (lkTimer && lkLast === btn) {
+function linkClick(btn, id) {
+  const kind = btn.dataset.kind, key = id + ":" + kind;
+  if (lkTimer && lkLast === key) {
     clearTimeout(lkTimer); lkTimer = 0; lkLast = null;
-    editLink(node, kind);
+    editLink(id, kind);
     return;
   }
-  clearTimeout(lkTimer); lkLast = btn;
+  clearTimeout(lkTimer); lkLast = key;
   lkTimer = setTimeout(() => {
     lkTimer = 0; lkLast = null;
-    const url = node[LINKS[kind].key];
+    const f = find(id); if (!f) return;
+    const url = f.node[LINKS[kind].key];
     if (url) send("openLink", { url });
     else toast("Chưa có link · double click để chèn");
   }, 260);
 }
-function editLink(node, kind) {
-  const L = LINKS[kind], cur = node[L.key] || "";
-  const save = url => { node[L.key] = url; render(); changed(); };
+function editLink(id, kind) {
+  const f0 = find(id); if (!f0) return;
+  const L = LINKS[kind], cur = f0.node[L.key] || "", title = plain(f0.node.html);
+  const save = url => { const f = find(id); if (!f) { toast("Đầu mục này vừa bị xoá"); return; } f.node[L.key] = url; render(true); changed(); };
   const buttons = [{ label: "Huỷ" }];
   if (cur) buttons.push({ label: "Xoá link", run: () => save("") });
   buttons.push({ label: "Lưu", cls: "primary", def: true, run: v => {
@@ -421,7 +573,7 @@ function editLink(node, kind) {
     if (!url && v.trim()) { toast("Link không hợp lệ"); return; }
     save(url);
   }});
-  dialog({ title: "Link " + L.name, text: plain(node.html) || "(đầu mục trống)",
+  dialog({ title: "Link " + L.name, text: title || "(đầu mục trống)",
     input: { value: cur, placeholder: "https://… hoặc D:\\Project\\..." }, buttons });
 }
 
@@ -458,12 +610,12 @@ listEl.addEventListener("keydown", e => {
       const above = doc.items[f.index - 1];
       doc.items.splice(f.index, 1);
       const n = { id: f.node.id, html: f.node.html, checked: false };
-      above.children.push(n); render(); changed(); focusRow(n.id, true);
+      above.children.push(n); render(true); changed(); focusRow(n.id, true);
     } else if (e.shiftKey && f.parent) {
       // đưa mục con ra ngoài thành đầu mục
       f.list.splice(f.index, 1);
-      const n = { id: f.node.id, html: f.node.html, enabled: true, refLink: "", taskLink: "", children: [] };
-      doc.items.splice(doc.items.indexOf(f.parent) + 1, 0, n); render(); changed(); focusRow(n.id, true);
+      const n = { id: newId(), html: f.node.html, enabled: true, children: [] };
+      doc.items.splice(doc.items.indexOf(f.parent) + 1, 0, n); render(true); changed(); focusRow(n.id, true);
     }
   } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
     if (!caretAtEdge(t, e.key === "ArrowUp")) return;
@@ -574,15 +726,17 @@ function autoScroll() {
 function endDrag() {
   const d = drag; drag = null;
   document.body.classList.remove("dragging");
+  pendingRender = false;
   const id = d.unit.dataset.id;
   const visualTop = d.unit.getBoundingClientRect().top;
   if (d.to !== d.from) {
     const f = find(id);
     const [n] = f.list.splice(f.index, 1);
     f.list.splice(d.to, 0, n);
+    if (!f.parent) n.order = undefined;
     changed();
   }
-  render();
+  render(true);
   // hạ mục xuống vị trí mới thật mượt
   const nu = d.isKid ? rowEl(id) : listEl.querySelector(`.group[data-id="${id}"]`);
   if (!nu) return;
@@ -643,24 +797,6 @@ function toast(m) {
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 1800);
 }
 
-/* ================= File: mới / mở / lưu ================= */
-let afterSave = null;
-function guardUnsaved(action) {
-  // board chưa có file và có nội dung → hỏi trước khi bỏ đi
-  if (fileName || !doc.items.some(i => plain(i.html) || i.children.length)) { action(); return; }
-  dialog({ title: "Board hiện tại chưa được lưu thành file",
-    text: "Bạn có muốn lưu lại trước không?",
-    buttons: [{ label: "Huỷ" }, { label: "Không lưu", run: action },
-      { label: "Lưu…", cls: "primary", def: true, run: () => { afterSave = action; doSave(true); } }] });
-}
-function doSave(as) { flush(); send("save", { text: serialize(), as: !!as }); }
-function doNew() { flush(); send("new"); }
-function doOpen() { flush(); send("open"); }
-
-$("#bNew").onclick = () => guardUnsaved(doNew);
-$("#bOpen").onclick = () => guardUnsaved(doOpen);
-$("#bSave").onclick = () => doSave(false);
-$("#bSave").oncontextmenu = e => { e.preventDefault(); doSave(true); };
 $("#emptyAdd").onclick = () => addItemAfter(null);
 document.querySelectorAll(".head .ib").forEach(b => b.addEventListener("mousedown", e => e.preventDefault()));
 
@@ -669,16 +805,14 @@ $("#head").addEventListener("pointerdown", e => {
   if (e.button === 0 && !e.target.closest("button")) { e.preventDefault(); send("drag"); }
 });
 $("#bTop").onclick = () => send("toggleTop");
-$("#bHide").onclick = () => { flush(); send("hide"); };
+$("#bHide").onclick = () => { if (saveTimer) flush(); send("hide"); };
 
 document.addEventListener("keydown", e => {
   if (veil.classList.contains("show")) return;
   if (!e.ctrlKey) return;
   const k = e.key.toLowerCase();
-  if (k === "s") { e.preventDefault(); doSave(e.shiftKey); }
-  else if (k === "o") { e.preventDefault(); guardUnsaved(doOpen); }
-  else if (k === "n") { e.preventDefault(); guardUnsaved(doNew); }
-  else if (k === "k") e.preventDefault();
+  if (k === "s") { e.preventDefault(); if (saveTimer) flush(); }
+  else if (k === "o" || k === "n" || k === "k") e.preventDefault();
   else if (k === "b" || k === "i" || k === "u") e.preventDefault();   // không dùng định dạng chữ
   else if (["p", "f", "r", "u", "j", "g", "h", "l", "=", "-", "+", "0"].includes(k)) e.preventDefault(); // chặn phím tắt của trình duyệt
 });
@@ -690,24 +824,10 @@ document.addEventListener("dragover", e => e.preventDefault());
 /* ================= Tin nhắn từ app Windows ================= */
 function onHost(msg) {
   switch (msg.type) {
-    case "load": {
-      try {
-        doc = msg.text ? normalizeDoc(JSON.parse(msg.text)) : sampleDoc();
-        fileName = msg.file || null;
-        render(); updateStatus();
-        if (!msg.text) flush();
-      } catch (err) { toast("Không đọc được file: " + err.message); }
-      break;
-    }
-    case "saved":
-      fileName = msg.file || fileName; updateStatus(); toast("Đã lưu " + (fileName || ""));
-      if (afterSave) { const a = afterSave; afterSave = null; a(); }
-      break;
-    case "saveCancelled": afterSave = null; break;
-    case "requestSave": doSave(!!msg.as); break;
-    case "requestOpen": guardUnsaved(doOpen); break;
-    case "requestNew": guardUnsaved(doNew); break;
-    case "flush": flush(); break;
+    case "flush": if (saveTimer) flush(); break;
+    case "admin": showLoginOrAdmin(); break;
+    case "leave": askLeave(); break;
+    case "legacy": S.legacyText = msg.text || null; if (S.admin) renderAdmin(); break;
     case "error": toast(msg.message || "Có lỗi xảy ra"); break;
     case "toast": toast(msg.message); break;
     case "onTop": {
@@ -724,31 +844,394 @@ if (host) host.addEventListener("message", e => onHost(typeof e.data === "string
 
 /* ---- chạy thử trong trình duyệt (không có app Windows) ---- */
 function browserHost(msg) {
-  const KEY = "glowboard-preview";
-  const store = { get() { try { return localStorage.getItem(KEY); } catch (_) { return null; } },
-                  set(v) { try { localStorage.setItem(KEY, v); } catch (_) {} } };
   switch (msg.type) {
-    case "ready": setTimeout(() => onHost({ type: "load", text: store.get() }), 0); break;
-    case "autosave": store.set(msg.text); break;
-    case "save": {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([msg.text], { type: "application/json" }));
-      a.download = "board.gboard"; a.click();
-      setTimeout(() => onHost({ type: "saved", file: "board.gboard" }), 0); break;
-    }
-    case "open": {
-      const i = document.createElement("input"); i.type = "file"; i.accept = ".gboard,.json";
-      i.onchange = () => i.files[0] && i.files[0].text().then(t => onHost({ type: "load", text: t, file: i.files[0].name }));
-      i.click(); break;
-    }
-    case "new": onHost({ type: "load", text: JSON.stringify({ items: [] }) }); break;
     case "openLink": window.open(msg.url, "_blank"); break;
     case "hide": toast("(Bản xem thử) Trong app sẽ thu xuống khay hệ thống"); break;
     case "toggleTop": { const on = !$("#bTop").classList.contains("on"); setTimeout(() => onHost({ type: "onTop", on }), 0); break; }
+    case "getLegacy": setTimeout(() => onHost({ type: "legacy", text: null }), 0); break;
   }
 }
 
+/* ================= Firebase & team ================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAWiw2iFVa2w8rbokTyYsfoAxII30tOehA",
+  authDomain: "glowboard-56805.firebaseapp.com",
+  projectId: "glowboard-56805",
+  storageBucket: "glowboard-56805.firebasestorage.app",
+  messagingSenderId: "409641542439",
+  appId: "1:409641542439:web:0ea4f92cf81bd1bee0bf02",
+};
+const ADMIN_UID = "mCdN9oXNpHZlQ7qthXKpHwwEpPn1";
+const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";   // bỏ chữ dễ nhầm: I, L, O, 0, 1
+
+let FB_APP = null, FB_AUTH = null, FB_DB = null;
+const S = {                 // trạng thái hiện tại
+  user: null, admin: false,
+  teamId: null, teamName: "", code: "", name: "",
+  unsubItems: null, unsubTeam: null, unsubAdmin: null,
+  serverItems: {}, teams: [], counts: {}, legacyText: null,
+};
+const store = {
+  get(k) { try { return localStorage.getItem("gb." + k) || ""; } catch (_) { return ""; } },
+  set(k, v) { try { v ? localStorage.setItem("gb." + k, v) : localStorage.removeItem("gb." + k); } catch (_) {} },
+};
+
+function show(view) {
+  ["scroll", "vJoin", "vLogin", "vAdmin", "vLock"].forEach(v => $("#" + v).classList.toggle("show", v === view));
+  $("#bBack").hidden = !(S.admin && view === "scroll");
+  $("#bLogout").hidden = !(S.admin && view === "vAdmin");
+}
+function setChip(text, admin) {
+  $("#chip").hidden = !text;
+  $("#chipName").textContent = text || "";
+  $("#chip").classList.toggle("admin", !!admin);
+  $("#sub").textContent = admin && !S.teamId ? "Quản lý team" : "Keep what you want";
+}
+function setSync(online) {
+  $("#sync").classList.toggle("off", !online);
+  $("#chip").title = online ? "Đã đồng bộ" : "Đang offline · thay đổi sẽ tự đồng bộ khi có mạng";
+}
+
+function initFirebase() {
+  FB_APP = FB.initializeApp(FIREBASE_CONFIG);
+  FB_AUTH = FB.initializeAuth(FB_APP, { persistence: [FB.indexedDBLocalPersistence, FB.browserLocalPersistence] });
+  let cache;
+  try { cache = FB.persistentLocalCache({ tabManager: FB.persistentSingleTabManager() }); } catch (_) {}
+  FB_DB = FB.initializeFirestore(FB_APP, cache ? { localCache: cache } : {});
+  if (/[?&]emu=1/.test(location.search)) {     // chạy thử với Firebase giả lập trên máy
+    FB.connectAuthEmulator(FB_AUTH, "http://127.0.0.1:9099", { disableWarnings: true });
+    FB.connectFirestoreEmulator(FB_DB, "127.0.0.1", 8080);
+  }
+  let first = true;
+  FB.onAuthStateChanged(FB_AUTH, user => {
+    S.user = user;
+    if (!user) { FB.signInAnonymously(FB_AUTH).catch(err => showJoinError(errText(err))); return; }
+    S.admin = user.uid === ADMIN_UID;
+    if (S.admin) { openAdmin(); return; }
+    if (first || !S.teamId) startMember();
+    first = false;
+  });
+}
+
+function errText(err) {
+  const c = (err && err.code) || "";
+  if (c.includes("permission-denied")) return "Không có quyền truy cập";
+  if (c.includes("unavailable") || c.includes("network")) return "Không kết nối được mạng";
+  if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found") || c.includes("invalid-email")) return "Email hoặc mật khẩu không đúng";
+  if (c.includes("too-many-requests")) return "Thử sai quá nhiều lần, đợi một lát rồi thử lại";
+  return (err && err.message) || "Có lỗi xảy ra";
+}
+function normCode(c) { return String(c || "").toUpperCase().replace(/\s+/g, ""); }
+
+/* ---------- thành viên ---------- */
+function startMember() {
+  const code = store.get("code"), name = store.get("name");
+  $("#jName").value = name;
+  if (code && name) joinTeam(code, name, true);
+  else { stopTeam(); setChip(""); show("vJoin"); }
+}
+function showJoinError(t) { $("#jErr").textContent = t || ""; }
+
+function withTimeout(p, ms) {
+  return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: "gb/timeout" }), ms))]);
+}
+async function joinTeam(code, name, silent) {
+  code = normCode(code); name = String(name || "").trim().slice(0, 40);
+  if (!code || !name) { showJoinError("Hãy nhập mã team và tên của bạn"); return; }
+  if (!S.user) { showJoinError("Đang kết nối, thử lại sau giây lát…"); return; }
+  $("#jGo").disabled = true; showJoinError("");
+  const savedTeam = store.get("teamId");
+  try {
+    const c = await withTimeout(FB.getDoc(FB.doc(FB_DB, "codes", code)), 10000);
+    if (!c.exists()) throw { code: "gb/bad-code" };
+    const teamId = c.data().teamId;
+    if (c.data().locked) throw { code: "gb/locked", teamId };
+    await withTimeout(FB.setDoc(FB.doc(FB_DB, "teams", teamId, "members", S.user.uid),
+      { name, code, joinedAt: FB.serverTimestamp(), lastSeen: FB.serverTimestamp() }), 10000);
+    store.set("code", code); store.set("name", name); store.set("teamId", teamId);
+    S.name = name; S.code = code;
+    openTeam(teamId, "");
+  } catch (err) {
+    const k = (err && err.code) || "";
+    const offline = k === "gb/timeout" || k === "unavailable" || String(k).includes("network");
+    if (silent && savedTeam && (offline || k === "gb/locked")) {
+      // mất mạng → mở board từ bản lưu sẵn trên máy; team bị khóa → màn hình khóa tự mở lại khi được mở khóa
+      S.name = name; S.code = code; openTeam(savedTeam, ""); return;
+    }
+    if (silent && k === "gb/bad-code") { showLock("code"); return; }
+    show("vJoin"); setChip("");
+    showJoinError(k === "gb/bad-code" ? "Mã team không đúng hoặc đã hết hiệu lực"
+      : k === "gb/locked" ? "Team này đang bị khóa"
+      : offline ? "Không kết nối được mạng" : errText(err));
+  } finally { $("#jGo").disabled = false; }
+}
+$("#jGo").onclick = () => joinTeam($("#jCode").value, $("#jName").value, false);
+[$("#jCode"), $("#jName")].forEach(i => i.addEventListener("keydown", e => { if (e.key === "Enter") $("#jGo").click(); }));
+$("#jCode").addEventListener("input", e => { const p = e.target.selectionStart; e.target.value = e.target.value.toUpperCase(); e.target.setSelectionRange(p, p); });
+
+function stopTeam() {
+  if (saveTimer) flush();
+  if (S.unsubItems) S.unsubItems(); if (S.unsubTeam) S.unsubTeam();
+  S.unsubItems = S.unsubTeam = null;
+  S.teamId = null; S.serverItems = {}; synced = {}; doc = { items: [] }; renderedSig = "";
+  listEl.innerHTML = "";
+}
+
+/* mở board của 1 team và lắng nghe thay đổi realtime */
+function openTeam(teamId, name) {
+  stopTeam();
+  S.teamId = teamId; S.teamName = name;
+  setChip(name || "Team", S.admin); setSync(true);
+  show("scroll");
+  S.unsubTeam = FB.onSnapshot(FB.doc(FB_DB, "teams", teamId), snap => {
+    if (!snap.exists()) { showLock("code"); return; }
+    const t = snap.data();
+    S.teamName = t.name || "Team";
+    setChip((S.admin ? "ADMIN · " : "") + S.teamName, S.admin);
+    if (t.locked && !S.admin) { if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; } showLock("locked"); }
+    else if (!S.unsubItems) { show("scroll"); listenItems(); }
+  }, err => { if (!S.admin) showLock("code"); else toast(errText(err)); });
+}
+function listenItems() {
+  const q = FB.query(FB.collection(FB_DB, "teams", S.teamId, "items"), FB.orderBy("order"));
+  S.unsubItems = FB.onSnapshot(q, { includeMetadataChanges: true }, snap => {
+    setSync(!snap.metadata.fromCache);
+    applySnapshot(snap);
+  }, err => onSyncError(err));
+}
+function applySnapshot(snap) {
+  if (saveTimer) { flush(); return; }          // còn thay đổi chưa ghi → ghi trước, lần sau sẽ nhận bản mới
+  const act = document.activeElement && document.activeElement.closest ? document.activeElement.closest(".txt") : null;
+  const actId = act ? act.closest(".row").dataset.id : null;
+  const items = [];
+  S.serverItems = {}; synced = {};
+  snap.forEach(d => {
+    const x = d.data();
+    const it = { id: d.id, html: sanitize(String(x.html || "")), enabled: !!x.enabled, order: x.order,
+      by: x.by || "", at: x.at || 0,
+      children: (Array.isArray(x.children) ? x.children : []).map(c => ({
+        id: String(c.id || newId()), html: sanitize(String(c.html || "")), checked: !!c.checked, by: c.by || "", at: c.at || 0 })) };
+    LINK_KEYS.forEach(k => it[k] = cleanUrl(String(x[k] || "")));
+    items.push(it);
+    S.serverItems[it.id] = JSON.parse(JSON.stringify(it));
+    synced[it.id] = content(it);
+  });
+  // dòng đang gõ: giữ chữ đang gõ trên máy này
+  if (actId) {
+    const local = sanitize(act.innerHTML);
+    for (const it of items) {
+      if (it.id === actId && it.html !== local) { it.html = local; changed(); }
+      for (const c of it.children) if (c.id === actId && c.html !== local) { c.html = local; changed(); }
+    }
+  }
+  doc.items = items;
+  render();
+  if (!S.firstLoaded) { S.firstLoaded = true; }
+}
+function onSyncError(err) {
+  if (err && err.code === "permission-denied") {
+    if (S.admin) { toast("Không có quyền ghi"); return; }
+    // bị khóa hoặc mã đã đổi → listener team sẽ báo đúng lý do
+    if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; }
+    showLock("checking");
+    return;
+  }
+  setSync(false);
+}
+function showLock(kind) {
+  if (kind === "checking") { $("#lockTitle").textContent = "Không truy cập được board"; $("#lockText").innerHTML = "Đang kiểm tra lại quyền truy cập…"; }
+  else if (kind === "locked") { $("#lockTitle").textContent = "Team đã bị khóa"; $("#lockText").innerHTML = "Board tạm thời không truy cập được.<br>Liên hệ quản lý để được mở lại."; }
+  else { $("#lockTitle").textContent = "Mã team đã được đổi"; $("#lockText").innerHTML = "Mã bạn đang dùng không còn hiệu lực.<br>Liên hệ quản lý để nhận mã mới."; }
+  if (kind === "code") { if (S.unsubTeam) { S.unsubTeam(); S.unsubTeam = null; } if (S.unsubItems) { S.unsubItems(); S.unsubItems = null; } }
+  setChip(""); show("vLock");
+}
+$("#lockOther").onclick = () => { stopTeam(); store.set("code", ""); $("#jCode").value = ""; showJoinError(""); setChip(""); show("vJoin"); };
+
+function askLeave() {
+  if (S.admin) { toast("Đang ở chế độ Admin"); return; }
+  dialog({ title: "Rời team?", text: "Bạn sẽ cần nhập lại mã team để vào lại board.", buttons: [
+    { label: "Huỷ" }, { label: "Rời team", cls: "danger", def: true, run: () => {
+      const t = S.teamId;
+      stopTeam();
+      if (t && S.user) FB.deleteDoc(FB.doc(FB_DB, "teams", t, "members", S.user.uid)).catch(() => {});
+      store.set("code", ""); store.set("teamId", ""); $("#jCode").value = ""; showJoinError(""); setChip(""); show("vJoin");
+    } }] });
+}
+
+/* ---------- ai sửa: rê chuột vào dòng ---------- */
+const whoEl = $("#who");
+let whoT = 0;
+function ago(ms) {
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 60) return "vừa xong";
+  if (s < 3600) return Math.floor(s / 60) + " phút trước";
+  if (s < 86400) return Math.floor(s / 3600) + " giờ trước";
+  if (s < 172800) return "hôm qua";
+  const d = new Date(ms); return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+}
+listEl.addEventListener("mouseover", e => {
+  const row = e.target.closest(".row");
+  clearTimeout(whoT); whoEl.style.display = "none";
+  if (!row || drag) return;
+  whoT = setTimeout(() => {
+    const f = find(row.dataset.id); if (!f || !f.node.by || drag) return;
+    whoEl.innerHTML = "";
+    whoEl.append("Sửa bởi ");
+    const b = document.createElement("b"); b.textContent = f.node.by; whoEl.append(b);
+    if (f.node.at) whoEl.append(" · " + ago(f.node.at));
+    const r = row.querySelector(".txt").getBoundingClientRect();
+    whoEl.style.display = "block";
+    whoEl.style.left = Math.max(4, Math.min(r.left, innerWidth - whoEl.offsetWidth - 4)) + "px";
+    whoEl.style.top = (r.bottom + 6 + whoEl.offsetHeight > innerHeight ? r.top - whoEl.offsetHeight - 6 : r.bottom + 6) + "px";
+  }, 700);
+});
+listEl.addEventListener("mouseleave", () => { clearTimeout(whoT); whoEl.style.display = "none"; });
+listEl.addEventListener("pointerdown", () => { clearTimeout(whoT); whoEl.style.display = "none"; });
+
+/* ---------- Admin ---------- */
+function showLoginOrAdmin() {
+  if (S.admin) { openAdmin(); return; }
+  $("#lErr").textContent = ""; $("#lPass").value = "";
+  setChip(""); show("vLogin"); $("#lEmail").focus();
+}
+$("#toLogin").onclick = showLoginOrAdmin;
+$("#loginBack").onclick = () => startMember();
+$("#lGo").onclick = async () => {
+  $("#lGo").disabled = true; $("#lErr").textContent = "";
+  try {
+    stopTeam();
+    const cred = await FB.signInWithEmailAndPassword(FB_AUTH, $("#lEmail").value.trim(), $("#lPass").value);
+    $("#lPass").value = "";
+    if (cred.user.uid !== ADMIN_UID) { await FB.signOut(FB_AUTH); $("#lErr").textContent = "Tài khoản này không phải Admin"; }
+  } catch (err) { $("#lErr").textContent = errText(err); }
+  finally { $("#lGo").disabled = false; }
+};
+$("#lPass").addEventListener("keydown", e => { if (e.key === "Enter") $("#lGo").click(); });
+$("#bLogout").onclick = () => dialog({ title: "Thoát chế độ Admin?", buttons: [{ label: "Huỷ" }, { label: "Thoát", cls: "danger", def: true, run: async () => {
+  if (S.unsubAdmin) { S.unsubAdmin(); S.unsubAdmin = null; }
+  stopTeam(); S.admin = false;
+  await FB.signOut(FB_AUTH);           // sau đó tự đăng nhập ẩn danh lại → màn hình nhập mã
+} }] });
+$("#bBack").onclick = () => openAdmin();
+
+function openAdmin() {
+  stopTeam();
+  setChip("ADMIN", true); show("vAdmin");
+  send("getLegacy");
+  if (S.unsubAdmin) { renderAdmin(); countMembers(); return; }
+  S.unsubAdmin = FB.onSnapshot(FB.collection(FB_DB, "teams"), snap => {
+    S.teams = [];
+    snap.forEach(d => S.teams.push(Object.assign({ id: d.id }, d.data())));
+    S.teams.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    renderAdmin(); countMembers();
+  }, err => toast(errText(err)));
+}
+/* đếm số máy đang dùng mã hiện tại của mỗi team (cập nhật mỗi 30 giây khi đang xem danh sách) */
+function countMembers() {
+  S.teams.forEach(t => {
+    FB.getCountFromServer(FB.query(FB.collection(FB_DB, "teams", t.id, "members"), FB.where("code", "==", t.code)))
+      .then(r => { if (S.counts[t.id] !== r.data().count) { S.counts[t.id] = r.data().count; renderAdmin(); } }).catch(() => {});
+  });
+}
+setInterval(() => { if (S.admin && $("#vAdmin").classList.contains("show")) countMembers(); }, 30000);
+function renderAdmin() {
+  $("#aCount").textContent = S.teams.length + " team";
+  const box = $("#aList"); box.innerHTML = "";
+  if (!S.teams.length) { box.innerHTML = '<div class="empty">Chưa có team nào<br>Bấm ＋ Tạo team để bắt đầu</div>'; return; }
+  for (const t of S.teams) {
+    const el = document.createElement("div");
+    el.className = "team" + (t.locked ? " locked" : "");
+    el.innerHTML = `<div class="n"><span class="tn"></span><span class="st${t.locked ? " lock" : ""}">${t.locked ? "Đã khóa" : "Đang mở"}</span></div>
+      <div class="codeline"><span class="tc"></span><button data-a="copy">📋 copy</button><small>· ${S.counts[t.id] != null ? S.counts[t.id] + " máy" : "…"}</small></div>
+      <div class="tacts"><button class="g" data-a="open">Mở board</button><button data-a="code">Đổi mã</button>
+      ${t.locked ? '<button class="g" data-a="lock">Mở khóa</button>' : '<button class="r" data-a="lock">Khóa team</button>'}
+      ${S.legacyText ? '<button data-a="import">Nhập board cũ</button>' : ""}</div>`;
+    el.querySelector(".tn").textContent = t.name;
+    el.querySelector(".tc").textContent = t.code;
+    el.addEventListener("click", e => { const b = e.target.closest("button[data-a]"); if (b) adminAction(t, b.dataset.a); });
+    box.appendChild(el);
+  }
+}
+function genCode(name) {
+  // lấy chữ đầu của tên (bỏ chữ "Team"), VD "Team Dragon" → DRAGON
+  const words = String(name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "D")
+    .toUpperCase().split(/[^A-Z0-9]+/).filter(w => w && w !== "TEAM");
+  const prefix = (words.join("").replace(/[^A-Z]/g, "")).slice(0, 6) || "TEAM";
+  const r = new Uint32Array(6); crypto.getRandomValues(r);
+  return prefix + "-" + Array.from(r, x => CODE_CHARS[x % CODE_CHARS.length]).join("");
+}
+$("#aNew").onclick = () => dialog({ title: "Tạo team mới", text: "Đặt tên team (VD: Team Dragon). Mã team sẽ được tạo tự động.",
+  input: { value: "", placeholder: "Tên team" }, buttons: [{ label: "Huỷ" }, { label: "Tạo", cls: "primary", def: true, run: async v => {
+    const name = String(v || "").trim().slice(0, 40);
+    if (!name) { toast("Hãy nhập tên team"); return; }
+    const id = newId(), code = genCode(name);
+    const b = FB.writeBatch(FB_DB);
+    b.set(FB.doc(FB_DB, "teams", id), { name, code, locked: false, createdAt: FB.serverTimestamp() });
+    b.set(FB.doc(FB_DB, "codes", code), { teamId: id, locked: false });
+    try { await b.commit(); copyText(code); toast("Đã tạo " + name + " · mã " + code + " (đã copy)"); }
+    catch (err) { toast(errText(err)); }
+  } }] });
+
+async function adminAction(t, a) {
+  if (a === "copy") { copyText(t.code); toast("Đã copy mã " + t.code); return; }
+  if (a === "open") { openTeam(t.id, t.name); return; }
+  if (a === "code") {
+    dialog({ title: "Đổi mã " + t.name + "?", text: "Mã cũ " + t.code + " sẽ hết hiệu lực ngay. Mọi máy đang dùng mã cũ sẽ phải nhập mã mới.",
+      buttons: [{ label: "Huỷ" }, { label: "Đổi mã", cls: "danger", def: true, run: async () => {
+        const code = genCode(t.name);
+        const b = FB.writeBatch(FB_DB);
+        b.delete(FB.doc(FB_DB, "codes", t.code));
+        b.set(FB.doc(FB_DB, "codes", code), { teamId: t.id, locked: !!t.locked });
+        b.update(FB.doc(FB_DB, "teams", t.id), { code });
+        try { await b.commit(); copyText(code); S.counts[t.id] = 0; toast("Mã mới: " + code + " (đã copy)"); } catch (err) { toast(errText(err)); }
+      } }] });
+    return;
+  }
+  if (a === "lock") {
+    const lock = !t.locked;
+    const go = async () => {
+      const b = FB.writeBatch(FB_DB);
+      b.update(FB.doc(FB_DB, "teams", t.id), { locked: lock });
+      b.set(FB.doc(FB_DB, "codes", t.code), { teamId: t.id, locked: lock });
+      try { await b.commit(); toast(lock ? "Đã khóa " + t.name : "Đã mở khóa " + t.name); } catch (err) { toast(errText(err)); }
+    };
+    if (!lock) { go(); return; }
+    dialog({ title: "Khóa " + t.name + "?", text: "Cả team sẽ không mở được board cho tới khi bạn mở khóa. Dữ liệu vẫn được giữ nguyên.",
+      buttons: [{ label: "Huỷ" }, { label: "Khóa team", cls: "danger", def: true, run: go }] });
+    return;
+  }
+  if (a === "import") {
+    dialog({ title: "Nhập board cũ vào " + t.name + "?", text: "Các đầu mục trong board cá nhân cũ trên máy này sẽ được thêm vào cuối board của team.",
+      buttons: [{ label: "Huỷ" }, { label: "Nhập", cls: "primary", def: true, run: () => importLegacy(t) }] });
+  }
+}
+async function importLegacy(t) {
+  let raw;
+  try { raw = JSON.parse(S.legacyText); } catch (_) { toast("Không đọc được board cũ"); return; }
+  const items = Array.isArray(raw && raw.items) ? raw.items : [];
+  if (!items.length) { toast("Board cũ đang trống"); return; }
+  let base = 0;
+  try {
+    const cur = await FB.getDocs(FB.query(FB.collection(FB_DB, "teams", t.id, "items"), FB.orderBy("order")));
+    cur.forEach(d => { const o = d.data().order; if (typeof o === "number" && o >= base) base = o + 1; });
+  } catch (_) {}
+  const b = FB.writeBatch(FB_DB), now = Date.now();
+  items.slice(0, 450).forEach((i, n) => {
+    const it = { id: newId(), html: sanitize(String(i.html || "")), enabled: !!i.enabled, order: base + n, by: "Admin", at: now,
+      children: (Array.isArray(i.children) ? i.children : []).map(c => ({ id: newId(), html: sanitize(String(c.html || "")), checked: !!c.checked, by: "Admin", at: now })) };
+    it.refLink = cleanUrl(String(i.refLink || "")) || firstLink(i.html);
+    ["taskLink", "gdLink", "kcsLink"].forEach(k => it[k] = cleanUrl(String(i[k] || "")));
+    b.set(FB.doc(FB_DB, "teams", t.id, "items", it.id), itemData(it));
+  });
+  try { await b.commit(); toast("Đã nhập " + Math.min(items.length, 450) + " đầu mục vào " + t.name); } catch (err) { toast(errText(err)); }
+}
+function copyText(t) {
+  if (navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
+}
+
 send("ready");
+if (window.FB) initFirebase();
+else { show("vJoin"); showJoinError("Không tải được thư viện đồng bộ"); }
 </script>
 </body>
 </html>

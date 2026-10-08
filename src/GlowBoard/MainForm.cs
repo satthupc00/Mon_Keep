@@ -24,10 +24,9 @@ namespace GlowBoard
     {
         private const string AppTitle = "Mondiro GlowBoard";
         private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-        private const string EmptyBoard = "{\"app\":\"Mondiro GlowBoard\",\"version\":1,\"items\":[]}";
 
         private static readonly string DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mondiro", "GlowBoard");
-        private static readonly string DefaultBoardPath = Path.Combine(DataDir, "board.gboard");
+        private static readonly string LegacyBoardPath = Path.Combine(DataDir, "board.gboard");
         private static readonly string WebDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Mondiro", "GlowBoard", "WebView2");
 
         private readonly WebView2 _web;
@@ -37,13 +36,11 @@ namespace GlowBoard
         private readonly string _startupFile;
         private ToolStripMenuItem _autoStartItem;
 
-        private string _currentFile;   // null = board chưa lưu thành file (tự lưu vào DefaultBoardPath)
         private bool _peek;            // tạm thời cho board nổi lên trên các cửa sổ khác
         private bool _onTop;           // tuỳ chọn: luôn nằm trên mọi cửa sổ
         private ToolStripMenuItem _onTopItem;
         private bool _quitting;
         private bool _pageLoaded;
-        private bool _dialogOpen;
 
         private readonly Updater _updater = new Updater();
         private readonly Timer _updateTimer = new Timer();
@@ -134,10 +131,8 @@ namespace GlowBoard
             m.Items.Add(show);
             m.Items.Add("Ẩn board", null, (s, e) => HideBoard());
             m.Items.Add(new ToolStripSeparator());
-            m.Items.Add("Board mới", null, (s, e) => { ShowBoard(); Post(new { type = "requestNew" }); });
-            m.Items.Add("Mở board…", null, (s, e) => { ShowBoard(); Post(new { type = "requestOpen" }); });
-            m.Items.Add("Lưu", null, (s, e) => { ShowBoard(); Post(new { type = "requestSave", @as = false }); });
-            m.Items.Add("Lưu thành…", null, (s, e) => { ShowBoard(); Post(new { type = "requestSave", @as = true }); });
+            m.Items.Add("Chế độ Admin…", null, (s, e) => { ShowBoard(); Post(new { type = "admin" }); });
+            m.Items.Add("Rời team / nhập mã khác", null, (s, e) => { ShowBoard(); Post(new { type = "leave" }); });
             m.Items.Add(new ToolStripSeparator());
             _onTopItem = new ToolStripMenuItem("Luôn nằm trên cùng", null, (s, e) => SetOnTop(!_onTop)) { Checked = _onTop };
             m.Items.Add(_onTopItem);
@@ -242,7 +237,7 @@ namespace GlowBoard
         protected override void OnDeactivate(EventArgs e)
         {
             base.OnDeactivate(e);
-            if (_peek && !_dialogOpen) { _peek = false; SendToBottom(); }
+            if (_peek) { _peek = false; SendToBottom(); }
         }
 
         // ================= Tự cập nhật =================
@@ -272,7 +267,7 @@ namespace GlowBoard
         /// <summary>Cài bản mới khi board đang ẩn hoặc bạn không thao tác trên board (hoặc ngay lập tức nếu bạn bấm Kiểm tra cập nhật).</summary>
         private async Task TryApplyUpdateAsync(bool now = false)
         {
-            if (_updater.StagedVersion == null || _quitting || _dialogOpen) return;
+            if (_updater.StagedVersion == null || _quitting) return;
             if (!now && Visible && ContainsFocus) return;
             try
             {
@@ -345,22 +340,25 @@ namespace GlowBoard
             Close();
         }
 
+        /// <summary>Đẩy các thay đổi đang chờ lên Firebase (bản lưu trên máy sẽ tự đồng bộ nếu đang mất mạng).</summary>
         private async Task SaveBoardNowAsync()
         {
             if (!_pageLoaded) return;
-            string r = await _web.CoreWebView2.ExecuteScriptAsync("serialize()");
-            var text = _json.Deserialize<string>(r);
-            if (!string.IsNullOrEmpty(text)) WriteBoard(_currentFile ?? DefaultBoardPath, text);
+            await _web.CoreWebView2.ExecuteScriptAsync("window.flushNow && window.flushNow()");
+            await Task.Delay(600);
         }
 
         // ================= WebView2 =================
+        private const string AppOrigin = "https://glowboard.app/";
+
         protected override async void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            CoreWebView2Environment env;
             try
             {
                 Directory.CreateDirectory(WebDataDir);
-                var env = await CoreWebView2Environment.CreateAsync(null, WebDataDir);
+                env = await CoreWebView2Environment.CreateAsync(null, WebDataDir);
                 await _web.EnsureCoreWebView2Async(env);
             }
             catch (WebView2RuntimeNotFoundException)
@@ -386,19 +384,39 @@ namespace GlowBoard
             core.NewWindowRequested += (s, a) => { a.Handled = true; OpenLink(a.Uri); };
             core.NavigationStarting += (s, a) =>
             {
-                if (!_pageLoaded) return;
+                if (a.Uri.StartsWith(AppOrigin, StringComparison.OrdinalIgnoreCase)) return;
                 a.Cancel = true;          // không cho trang bị điều hướng đi chỗ khác
                 OpenLink(a.Uri);
             };
             core.NavigationCompleted += (s, a) => _pageLoaded = true;
-            _web.NavigateToString(ReadPage());
+
+            // Giao diện (index.html, fb.js) nằm sẵn trong exe, được phục vụ dưới địa chỉ https://glowboard.app/
+            // để Firebase có "origin" riêng và lưu được đăng nhập + dữ liệu offline trên máy.
+            core.AddWebResourceRequestedFilter(AppOrigin + "*", CoreWebView2WebResourceContext.All);
+            core.WebResourceRequested += (s, a) =>
+            {
+                var path = new Uri(a.Request.Uri).AbsolutePath.TrimStart('/');
+                if (path.Length == 0) path = "index.html";
+                var data = ReadResource(path);
+                a.Response = data == null
+                    ? env.CreateWebResourceResponse(null, 404, "Not Found", "")
+                    : env.CreateWebResourceResponse(new MemoryStream(data), 200, "OK",
+                        "Content-Type: " + (path.EndsWith(".js") ? "text/javascript" : "text/html") + "; charset=utf-8\r\nCache-Control: no-store");
+            };
+            core.Navigate(AppOrigin + "index.html");
         }
 
-        private static string ReadPage()
+        private static byte[] ReadResource(string path)
         {
-            using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("GlowBoard.index.html"))
-            using (var r = new StreamReader(s, Encoding.UTF8))
-                return r.ReadToEnd();
+            string name = path == "index.html" ? "GlowBoard.index.html" : path == "fb.js" ? "GlowBoard.fb.js" : null;
+            if (name == null) return null;
+            using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
+            using (var m = new MemoryStream())
+            {
+                if (s == null) return null;
+                s.CopyTo(m);
+                return m.ToArray();
+            }
         }
 
         private void Post(object msg)
@@ -417,14 +435,10 @@ namespace GlowBoard
             switch (Str("type"))
             {
                 case "ready":
-                    LoadInitialBoard();
                     Post(new { type = "onTop", on = _onTop });
                     if (_justUpdated) Post(new { type = "toast", message = "Đã cập nhật GlowBoard lên v" + Updater.CurrentVersion });
                     break;
-                case "autosave": TryWrite(_currentFile ?? DefaultBoardPath, Str("text")); break;
-                case "save": SaveBoard(Str("text"), msg.TryGetValue("as", out var a) && a is bool b && b); break;
-                case "open": OpenBoard(); break;
-                case "new": NewBoard(); break;
+                case "getLegacy": Post(new { type = "legacy", text = ReadLegacyBoard() }); break;
                 case "hide": HideBoard(); break;
                 case "toggleTop": SetOnTop(!_onTop); break;
                 case "openLink": OpenLink(Str("url")); break;
@@ -436,130 +450,22 @@ namespace GlowBoard
             }
         }
 
-        // ================= File board =================
-        private void LoadInitialBoard()
+        /// <summary>Board cá nhân của các bản trước (file .gboard trên máy) – để Admin nhập vào board team.</summary>
+        private string ReadLegacyBoard()
         {
-            foreach (var path in new[] { _startupFile, _settings.Get("LastFile") })
+            foreach (var path in new[] { _startupFile, _settings.Get("LastFile"), LegacyBoardPath })
             {
                 if (string.IsNullOrEmpty(path) || !File.Exists(path)) continue;
-                var text = ReadBoard(path, false);
-                if (text == null) continue;
-                SetCurrentFile(path);
-                Post(new { type = "load", text, file = Path.GetFileName(path) });
-                return;
-            }
-            SetCurrentFile(null);
-            Post(new { type = "load", text = File.Exists(DefaultBoardPath) ? ReadBoard(DefaultBoardPath, false) : null });
-        }
-
-        private void SaveBoard(string text, bool saveAs)
-        {
-            if (text == null) return;
-            string path = _currentFile;
-            if (saveAs || path == null)
-            {
-                using (var d = new SaveFileDialog
+                try
                 {
-                    Title = "Lưu board",
-                    Filter = "GlowBoard (*.gboard)|*.gboard",
-                    DefaultExt = "gboard",
-                    FileName = path != null ? Path.GetFileName(path) : "Board.gboard",
-                    InitialDirectory = path != null ? Path.GetDirectoryName(path) : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                })
-                {
-                    if (ShowDialogOnTop(d) != DialogResult.OK) { Post(new { type = "saveCancelled" }); return; }
-                    path = d.FileName;
+                    var text = File.ReadAllText(path, Encoding.UTF8);
+                    if (_json.DeserializeObject(text) is Dictionary<string, object> obj && obj.TryGetValue("items", out var items)
+                        && items is object[] arr && arr.Length > 0)
+                        return text;
                 }
+                catch { }
             }
-            if (!TryWrite(path, text)) { Post(new { type = "saveCancelled" }); return; }
-            SetCurrentFile(path);
-            Post(new { type = "saved", file = Path.GetFileName(path) });
-        }
-
-        private void OpenBoard()
-        {
-            using (var d = new OpenFileDialog
-            {
-                Title = "Mở board",
-                Filter = "GlowBoard (*.gboard)|*.gboard|Tất cả file|*.*",
-                InitialDirectory = _currentFile != null ? Path.GetDirectoryName(_currentFile) : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            })
-            {
-                if (ShowDialogOnTop(d) != DialogResult.OK) return;
-                var text = ReadBoard(d.FileName, true);
-                if (text == null) return;
-                SetCurrentFile(d.FileName);
-                Post(new { type = "load", text, file = Path.GetFileName(d.FileName) });
-            }
-        }
-
-        private void NewBoard()
-        {
-            SetCurrentFile(null);
-            TryWrite(DefaultBoardPath, EmptyBoard);
-            Post(new { type = "load", text = EmptyBoard });
-        }
-
-        private DialogResult ShowDialogOnTop(CommonDialog d)
-        {
-            _peek = true;   // giữ board nổi trong lúc hộp thoại mở
-            _dialogOpen = true;
-            try { return d.ShowDialog(this); }
-            finally { _dialogOpen = false; }
-        }
-
-        private void SetCurrentFile(string path)
-        {
-            _currentFile = path;
-            _settings.Set("LastFile", path ?? "");
-            _settings.Save();
-            _tray.Text = path == null ? AppTitle : Truncate(AppTitle + " – " + Path.GetFileName(path), 63);
-        }
-
-        private static string Truncate(string s, int n) => s.Length <= n ? s : s.Substring(0, n - 1) + "…";
-
-        /// <summary>Đọc file và kiểm tra có đúng là board GlowBoard không (tránh ghi đè nhầm file khác).</summary>
-        private string ReadBoard(string path, bool showError)
-        {
-            try
-            {
-                var text = File.ReadAllText(path, Encoding.UTF8);
-                var obj = _json.DeserializeObject(text) as Dictionary<string, object>;
-                if (obj == null || !(obj.TryGetValue("items", out var items) && items is object[]))
-                    throw new InvalidDataException("File này không phải board GlowBoard.");
-                return text;
-            }
-            catch (Exception ex)
-            {
-                if (showError) Post(new { type = "error", message = "Không mở được file: " + ex.Message });
-                return null;
-            }
-        }
-
-        private bool TryWrite(string path, string text)
-        {
-            if (text == null) return false;
-            try { WriteBoard(path, text); return true; }
-            catch (Exception ex)
-            {
-                Post(new { type = "error", message = "Không lưu được: " + ex.Message });
-                return false;
-            }
-        }
-
-        private static void WriteBoard(string path, string text)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            var tmp = path + ".tmp";
-            File.WriteAllText(tmp, text, new UTF8Encoding(false));
-            if (File.Exists(path))
-            {
-                try { File.Replace(tmp, path, null); return; }
-                catch (IOException) { }
-                File.Copy(tmp, path, true);
-                File.Delete(tmp);
-            }
-            else File.Move(tmp, path);
+            return null;
         }
 
         // ================= Mở link =================

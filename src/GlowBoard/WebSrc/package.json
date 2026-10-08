@@ -1,0 +1,14 @@
+{
+  "name": "glowboard-web",
+  "private": true,
+  "description": "Gói Firebase SDK thành 1 file Web/fb.js để nhúng vào app (chạy: npm install && npm run build)",
+  "scripts": {
+    "build": "esbuild fb-entry.js --bundle --minify --format=iife --target=chrome100 --outfile=../Web/fb.js"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
