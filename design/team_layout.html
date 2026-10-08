@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GlowBoard Team Layout</title>
+<style>
+:root{--bg:#45484f;--head:#383b41;--line:#555963;--btn:#50545d;--neon:#39ff7a;--red:#ff3b3b;--mute:#a9adb6;--off:#9ea2ac}
+*{box-sizing:border-box}
+body{margin:0;background:#2a2c31;color:#fff;font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:20px 16px}
+h1{font-size:18px;margin:0 0 4px}.lead{color:var(--mute);font-size:12.5px;margin:0 0 18px}
+.wrap{display:flex;flex-wrap:wrap;gap:22px}
+.col{width:340px;max-width:100%}
+.cap{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffd34d;margin:0 0 8px}
+.win{background:var(--bg);border:5px solid #2e3035;border-radius:10px;overflow:hidden;height:470px;display:flex;flex-direction:column;position:relative}
+.head{display:flex;align-items:center;gap:9px;padding:9px 10px 8px 12px;background:var(--head);border-bottom:1px solid var(--line)}
+.logo{width:28px;height:28px;border:2px solid var(--neon);border-radius:8px;background:#2a2c31}
+.t{font-size:15px;font-weight:700}.t .m{color:var(--red)}
+.d{font-size:10.5px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#2f3a33;color:var(--neon);border-radius:9px;padding:1px 7px;font-size:10px;font-weight:600}
+.sync{width:6px;height:6px;border-radius:50%;background:var(--neon)}
+.ib{margin-left:auto;display:flex;gap:4px}.ib span{width:24px;height:24px;border-radius:6px;background:var(--btn);display:inline-block}
+.body{flex:1;position:relative;padding:12px 10px}
+.wm{position:absolute;right:12px;bottom:8px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.22)}
+.card{background:#3c3f46;border:1px solid var(--line);border-radius:10px;padding:16px;margin:26px 8px 0}
+.card h3{margin:0 0 4px;font-size:15px}.card p{margin:0 0 14px;color:var(--mute);font-size:12px;line-height:1.5}
+label{display:block;font-size:11px;color:var(--mute);margin:0 0 4px}
+.in{background:#2b2d33;border:1px solid #5a5e68;border-radius:6px;padding:8px;font-size:13px;margin-bottom:12px;color:#fff}
+.in.code{font-family:Consolas,monospace;letter-spacing:.12em;font-size:15px;text-align:center;border-color:var(--neon)}
+.btn{display:block;text-align:center;padding:8px;border-radius:7px;background:#2f8a50;font-size:13px;font-weight:600}
+.small{font-size:11px;color:var(--mute);text-align:center;margin-top:12px}.small u{color:#dfe1e5}
+.row{display:flex;align-items:flex-start;gap:10px;padding:5px 8px;font-size:14px}
+.dot{width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--neon);box-shadow:inset 0 0 0 1.3px #c6ffd9,0 0 3px 1px rgba(120,255,165,.45)}
+.dot.off{background:var(--off);box-shadow:inset 0 0 0 1.3px #e4e6eb}
+.txt{font-weight:700;color:var(--neon)}.off .txt{color:var(--off)}
+.kid{padding-left:36px;font-size:13px;color:rgba(255,255,255,.66);display:flex;gap:8px;padding-top:4px;padding-bottom:4px}
+.chk{width:14px;height:14px;border:1.5px solid rgba(255,255,255,.55);border-radius:3px;margin-top:3px}.chk.ok{background:var(--neon);border-color:var(--neon)}
+.tip{position:absolute;background:#2b2d33;border:1px solid #5a5e68;color:#dfe1e5;font-size:11px;padding:4px 8px;border-radius:5px;white-space:nowrap}
+.tip b{color:var(--neon)}
+.cursor{position:absolute;width:0;height:0;border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;transform:rotate(-30deg)}
+.adm{padding:10px}
+.adm h4{margin:2px 0 8px;font-size:12px;color:var(--mute);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.new{background:#2f8a50;color:#fff;font-size:11px;padding:3px 8px;border-radius:6px}
+.team{background:#3c3f46;border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-bottom:8px}
+.team .n{font-weight:700;font-size:13px;display:flex;justify-content:space-between}
+.st{font-size:10px;padding:1px 7px;border-radius:8px;background:#2f3a33;color:var(--neon);font-weight:600}
+.st.lock{background:#4a2f2f;color:#ff9b9b}
+.codeline{font-family:Consolas,monospace;font-size:13px;letter-spacing:.08em;margin:5px 0;color:#fff;display:flex;align-items:center;gap:8px}
+.codeline small{font-family:"Segoe UI";letter-spacing:0;color:var(--mute);font-size:10.5px}
+.acts{display:flex;gap:5px;margin-top:6px}.acts span{font-size:11px;padding:3px 8px;border-radius:5px;background:var(--btn)}
+.acts .r{background:#6b3434}.acts .g{background:#2f6d45}
+.lockscr{position:absolute;inset:0;background:rgba(40,42,47,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.lockscr .ic{font-size:34px}.lockscr h3{margin:10px 0 6px;font-size:15px}.lockscr p{color:var(--mute);font-size:12px;line-height:1.5;margin:0 0 14px}
+.notes{max-width:1100px;margin-top:20px;font-size:12.5px;color:#cfd2d8;line-height:1.6}
+.notes b{color:#fff}
+</style></head><body>
+<h1>Phác layout – GlowBoard Team</h1>
+<p class="lead">Mockup tĩnh để duyệt bố cục. Màu, font, chấm tròn, icon giữ nguyên như app hiện tại.</p>
+<div class="wrap">
+
+<div class="col"><p class="cap">① Lần đầu mở app – nhập mã team</p>
+<div class="win"><div class="head"><div class="logo"></div><div><div class="t"><span class="m">Mondiro</span> GlowBoard</div><div class="d">Keep what you want</div></div></div>
+<div class="body">
+ <div class="card"><h3>Vào board của team</h3><p>Nhập mã team do quản lý gửi cho bạn.</p>
+  <label>Mã team</label><div class="in code">DRAGON-7K2X</div>
+  <label>Tên hiển thị của bạn</label><div class="in">Lan</div>
+  <div class="btn">Vào team</div>
+ </div>
+ <div class="small">Bạn là quản lý? <u>Đăng nhập Admin</u></div>
+ <div class="wm">Created by Mondiro</div>
+</div></div></div>
+
+<div class="col"><p class="cap">② Board của team + tooltip “ai sửa”</p>
+<div class="win"><div class="head"><div class="logo"></div><div><div class="t"><span class="m">Mondiro</span> GlowBoard</div><div class="d"><span class="chip"><span class="sync"></span>Team Dragon</span>Keep what you want</div></div><div class="ib"><span></span><span></span></div></div>
+<div class="body">
+ <div class="row"><span class="dot"></span><span class="txt">Boss Dragon – Spine 3.7</span></div>
+ <div class="kid"><span class="chk ok"></span><span style="text-decoration:line-through;opacity:.5">Rig xương cánh</span></div>
+ <div class="kid"><span class="chk"></span><span>Anim idle, attack</span></div>
+ <div class="tip" style="left:118px;top:106px">Sửa bởi <b>Lan</b> · 5 phút trước</div>
+ <div class="cursor" style="left:150px;top:86px"></div>
+ <div class="row off" style="margin-top:22px"><span class="dot off"></span><span class="txt">Concept nhân vật phụ</span></div>
+ <div class="kid"><span class="chk"></span><span>Hạn: thứ 6</span></div>
+ <div class="wm">Created by Mondiro</div>
+</div></div></div>
+
+<div class="col"><p class="cap">③ Chế độ Admin – quản lý team</p>
+<div class="win"><div class="head"><div class="logo"></div><div><div class="t"><span class="m">Mondiro</span> GlowBoard</div><div class="d"><span class="chip" style="background:#4a3d22;color:#ffd34d">ADMIN</span>Quản lý team</div></div><div class="ib"><span></span></div></div>
+<div class="adm">
+ <h4>3 team <span class="new">＋ Tạo team</span></h4>
+ <div class="team"><div class="n">Team Dragon <span class="st">Đang mở</span></div>
+  <div class="codeline">DRAGON-7K2X <small>📋 copy · 5 máy</small></div>
+  <div class="acts"><span class="g">Mở board</span><span>Đổi mã</span><span class="r">Khóa team</span></div></div>
+ <div class="team"><div class="n">Team Skin Tết <span class="st">Đang mở</span></div>
+  <div class="codeline">SKIN-Q9M4 <small>📋 copy · 3 máy</small></div>
+  <div class="acts"><span class="g">Mở board</span><span>Đổi mã</span><span class="r">Khóa team</span></div></div>
+ <div class="team" style="opacity:.75"><div class="n">Team Event cũ <span class="st lock">Đã khóa</span></div>
+  <div class="codeline">EVENT-2HX8 <small>📋 copy · 0 máy</small></div>
+  <div class="acts"><span class="g">Mở board</span><span>Đổi mã</span><span class="g">Mở khóa</span></div></div>
+</div></div></div>
+
+<div class="col"><p class="cap">④ Máy thành viên khi team bị khóa / đổi mã</p>
+<div class="win"><div class="head"><div class="logo"></div><div><div class="t"><span class="m">Mondiro</span> GlowBoard</div><div class="d">Keep what you want</div></div></div>
+<div class="body"><div class="lockscr"><div class="ic">🔒</div><h3>Team đã bị khóa</h3><p>Board tạm thời không truy cập được.<br>Liên hệ quản lý để được mở lại hoặc nhận mã mới.</p><div class="btn" style="padding:7px 16px">Nhập mã khác</div></div></div>
+</div></div>
+
+</div>
+<div class="notes">
+<b>Ghi chú:</b><br>
+• Mã team do app tự sinh ngẫu nhiên (vd <code>DRAGON-7K2X</code>), bạn đặt được tên team. Chỉ Admin tạo được team.<br>
+• <b>Đổi mã</b>: mã cũ hết hiệu lực ngay, mọi máy đang vào bằng mã cũ sẽ thấy màn hình ④ và phải nhập mã mới.<br>
+• <b>Khóa team</b>: cả team không đọc/ghi được board (dữ liệu vẫn giữ). Mở khóa là dùng lại bình thường.<br>
+• Chấm xanh nhỏ cạnh tên team = đang đồng bộ; mất mạng sẽ chuyển xám và vẫn ghi được, có mạng tự đồng bộ.<br>
+• Rê chuột vào một dòng (đầu mục hoặc mục con) sẽ hiện “Sửa bởi … · … trước”.<br>
+• Vào Admin: link nhỏ ở màn hình ①, hoặc chuột phải icon ở khay hệ thống → <b>Chế độ Admin…</b> (đăng nhập email + mật khẩu). Thành viên đổi team: khay hệ thống → <b>Rời team / nhập mã khác</b>.<br>
+• Bỏ các nút Mới / Mở / Lưu file vì giờ board tự lưu lên mạng.
+</div>
+</body></html>
