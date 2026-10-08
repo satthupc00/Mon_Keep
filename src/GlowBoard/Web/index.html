@@ -68,6 +68,7 @@
   /* đầu mục: chữ co theo nội dung, 2 nút link nằm ngay sau chữ */
   .group>.row .txt{flex:0 1 auto;min-width:40px;margin-right:0}
   .group>.row{padding-right:84px}
+  .group>.row .txt{min-width:60px}
   .links{display:flex;gap:3px;flex:none;margin-top:1px}
   .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:rgba(255,255,255,.28);transition:color .2s,background .2s}
   .lk svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -180,7 +181,7 @@ function sampleDoc() {
       ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự"),
       ch("Rê chuột vào dòng để thấy nút ↳ ＋ −"),
     ]),
-    it("Hai nút sau chữ: Reference animation và List task", false, [
+    it("Các nút sau chữ: Reference, List task, Feedback GD, Feedback KCS", false, [
       ch("Double click vào nút để chèn link"),
       ch("Click 1 lần để mở link"),
     ]),
@@ -230,6 +231,7 @@ function normalizeDoc(raw) {
   return { items: raw.items.map(i => ({
     id: newId(), html: sanitize(String(i.html || "")), enabled: !!i.enabled,
     refLink: cleanUrl(String(i.refLink || "")) || firstLink(i.html), taskLink: cleanUrl(String(i.taskLink || "")),
+    gdLink: cleanUrl(String(i.gdLink || "")), kcsLink: cleanUrl(String(i.kcsLink || "")),
     children: (Array.isArray(i.children) ? i.children : []).map(c => ({
       id: newId(), html: sanitize(String(c.html || "")), checked: !!c.checked,
     })),
@@ -238,6 +240,7 @@ function normalizeDoc(raw) {
 function serialize() {
   return JSON.stringify({ app: FILE_APP, version: 1, items: doc.items.map(i => ({
     html: i.html, enabled: i.enabled, refLink: i.refLink || "", taskLink: i.taskLink || "",
+    gdLink: i.gdLink || "", kcsLink: i.kcsLink || "",
     children: i.children.map(c => ({ html: c.html, checked: c.checked })),
   }))}, null, 1);
 }
@@ -271,9 +274,14 @@ const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></s
 
 const ICON_REF = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M7 5v4M12 5v4M17 5v4"/><path d="M10.5 12.2v4.6l4-2.3z" fill="currentColor"/></svg>';
 const ICON_TASK = '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5"/><path d="M8.5 10l1.3 1.3L12 9M8.5 15.5l1.3 1.3L12 14.5M14 10.3h2.5M14 15.8h2.5"/></svg>';
+const ICON_GD = '<svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9.5h3M10 8v3"/><circle cx="14.5" cy="8.6" r=".9" fill="currentColor" stroke="none"/><circle cx="15.8" cy="10.8" r=".9" fill="currentColor" stroke="none"/></svg>';
+const ICON_KCS = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3L20.5 20.5"/><path d="M7.8 10.6l1.9 1.9 3.3-3.6"/></svg>';
+/* các nút link sau chữ đầu mục, theo thứ tự hiển thị */
 const LINKS = {
   ref:  { key: "refLink",  icon: ICON_REF,  name: "Reference animation" },
   task: { key: "taskLink", icon: ICON_TASK, name: "List task" },
+  gd:   { key: "gdLink",   icon: ICON_GD,   name: "Feedback Game Designer" },
+  kcs:  { key: "kcsLink",  icon: ICON_KCS,  name: "Feedback KCS" },
 };
 function linkBtn(node, kind) {
   const L = LINKS[kind], url = node[L.key];
@@ -287,7 +295,7 @@ function rowHtml(node, isKid) {
   const acts = isKid
     ? `<button class="ab add" data-act="add" title="Thêm mục con bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`
     : `<button class="ab kid" data-act="kid" title="Thêm mục con">↳</button><button class="ab add" data-act="add" title="Thêm đầu mục bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`;
-  const links = isKid ? "" : `<span class="links">${linkBtn(node, "ref")}${linkBtn(node, "task")}</span>`;
+  const links = isKid ? "" : `<span class="links">${Object.keys(LINKS).map(k => linkBtn(node, k)).join("")}</span>`;
   return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}<span class="acts">${acts}</span>`;
 }
 function makeRow(node, isKid, tag) {
