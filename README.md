@@ -34,10 +34,9 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 | Gõ chữ | Click vào dòng. Đầu mục in đậm màu xanh dạ quang, mục con chữ trắng thường |
 | Thêm / xoá dòng | Rê chuột vào dòng → nút **+** / **−** ở cuối dòng (xoá sẽ hỏi lại). Board trống: nút **＋ Thêm đầu mục** |
 | Thêm mục con | Nút **↳** ở cuối dòng đầu mục |
-| Thu gọn / mở mục con | Mũi tên **▸** trước chấm tròn (lưu riêng trên máy bạn; khi thu gọn sẽ hiện số mục con) |
-| Link cho mục con | **Double click** vào chữ mục con → chèn / sửa link. Có link thì chữ được gạch dưới, **Ctrl+Click** để mở |
+| Thu gọn / mở mục con | Mũi tên **⌄ / ›** ở sau các nút link của đầu mục (lưu riêng trên máy bạn; khi thu gọn sẽ hiện số mục con) |
 | Nút link sau chữ đầu mục | **click** = mở link, **double click** = chèn / sửa link (nút sáng khi đã có link) |
-| Config các nút link | Nút ⚙ góc dưới trái board: thêm nút mới với icon PNG, sửa tooltip, ẩn / hiện, xoá. 4 nút mặc định (Reference, List task, Feedback GD, Miro) chỉ ẩn / hiện được. Áp dụng chung cả team |
+| Config các nút link | Nút ⚙ trên thanh tiêu đề (cạnh nút ghim): thêm nút mới với icon PNG, sửa tooltip, ẩn / hiện, xoá. 4 nút mặc định (Reference, List task, Feedback GD, Miro) chỉ ẩn / hiện được. Áp dụng chung cả team |
 | Dòng mới | `Enter` · xuống dòng trong cùng mục: `Shift+Enter` |
 | Đổi cấp | `Tab`: đầu mục → mục con · `Shift+Tab`: mục con → đầu mục |
 | Di chuyển / mở rộng board | Kéo thanh tiêu đề · kéo các cạnh viền |

@@ -36,7 +36,7 @@
   .brand .t{font-size:16px;font-weight:700;white-space:nowrap}
   .brand .t .m{color:var(--red)}
   .brand .d{font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .head .win{margin-left:auto;display:flex;gap:4px;flex:0 1 auto;min-width:0;justify-content:flex-end}
+  .head .win{margin-left:auto;display:flex;gap:3px;flex:0 1 auto;min-width:0;justify-content:flex-end}
   .head .win .ib{flex:none}
   .ib{height:26px;min-width:26px;padding:0 8px;border-radius:6px;background:var(--btn);color:#eef0f3;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
   .ib:hover{background:var(--btn-h)}
@@ -50,16 +50,12 @@
   /* ---------- canvas ---------- */
   .canvas{position:relative;flex:1;min-height:0}
   .wm{position:absolute;right:12px;bottom:8px;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.22);pointer-events:none;-webkit-user-select:none;user-select:none}
-  /* nút config các nút link: góc dưới trái, mờ, rê chuột thì sáng */
-  .cfgb{position:absolute;left:8px;bottom:5px;z-index:4;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:rgba(255,255,255,.3);transition:color .2s,background .2s}
-  .cfgb:hover{color:#e6e8ec;background:rgba(255,255,255,.08)}
-  .cfgb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .scroll{position:absolute;inset:0;overflow:auto;padding:12px 10px 40px}
   .scroll::-webkit-scrollbar{width:9px}
   .scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:9px;border:2px solid var(--bg)}
   ul{list-style:none;margin:0;padding:0}
-  .group{position:relative;margin-bottom:2px}
-  .row{position:relative;display:flex;align-items:flex-start;gap:10px;padding:5px 8px;border-radius:7px}
+  .group{position:relative;margin-bottom:0}
+  .row{position:relative;display:flex;align-items:flex-start;gap:10px;padding:2px 8px;border-radius:7px}
   /* chấm tròn bóng: viền ngoài sáng hơn ruột, vệt sáng phía trên */
   .dot{position:relative;width:12px;height:12px;border-radius:50%;flex:none;margin-top:5px;cursor:pointer}
   .dot::after{content:"";position:absolute;left:2.5px;top:1.2px;width:7px;height:5px;border-radius:50%;
@@ -69,14 +65,14 @@
   .dot.off{background-color:var(--off-dark);
        box-shadow:inset 0 0 0 1.3px #e4e6eb,inset 0 -2px 3px rgba(0,0,0,.18),0 0 3px 1px rgba(228,230,235,.25)}
   @keyframes pulseOn{0%,100%{background-color:var(--neon)}50%{background-color:var(--neon-dark)}}
-  .txt{flex:1;min-width:0;margin-right:74px;outline:none;line-height:22px;min-height:22px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text;cursor:text}
+  .txt{flex:1;min-width:0;margin-right:0;outline:none;line-height:22px;min-height:22px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text;cursor:text}
   .txt:empty::before{content:attr(data-ph);color:rgba(255,255,255,.3)}
   .group>.row .txt{font-weight:700;color:var(--neon);transition:color .3s}
   .group>.row.off .txt{color:var(--off-dark)}
   .children .row .txt{font-weight:400}
   /* đầu mục: chữ co theo nội dung, 2 nút link nằm ngay sau chữ */
   .group>.row .txt{flex:0 1 auto;min-width:40px;margin-right:0}
-  .group>.row{padding-right:84px}
+  .group>.row{padding-right:66px}
   .group>.row .txt{min-width:60px}
   .links{display:flex;gap:3px;flex:none;margin-top:1px}
   .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:#74777e;transition:color .2s,background .2s}
@@ -86,27 +82,24 @@
   .lk.set:hover{color:#8dffb4}
   .group>.row.off .lk.set{color:var(--off-dark)}
   /* nút + − nằm đè ở cuối dòng (không làm chữ nhảy dòng), ẩn và hiện dần khi rê chuột */
-  .acts{position:absolute;right:6px;top:6px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .5s ease}
-  .children .acts{top:5px}
+  .acts{position:absolute;right:4px;top:3px;display:flex;gap:3px;opacity:0;pointer-events:none;transition:opacity .5s ease}
+  .children .acts{top:1px}
   .row:hover>.acts{opacity:1;pointer-events:auto}
-  .ab{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;line-height:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);transition:background .2s,color .2s}
+  .ab{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;line-height:1;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);transition:background .2s,color .2s}
   .ab:hover{background:rgba(255,255,255,.14);color:rgba(255,255,255,.8)}
   .ab.kid{font-size:12px}
 
-  .children .row{padding-left:44px;gap:8px;font-size:13px;color:var(--sub)}
-  .children .txt{line-height:20px;min-height:20px;margin-right:50px}
+  .children .row{padding-left:36px;gap:8px;font-size:13px;color:var(--sub)}
+  .children .txt{line-height:19px;min-height:19px;margin-right:44px}
   /* mục con: chấm nhỏ đầu dòng; có link thì gạch dưới, Ctrl+Click để mở */
-  .bul{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);flex:none;margin:8px 4px 0 5px}
-  .kid.linked .txt{text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
-  .ctrl .kid.linked .txt{cursor:pointer}
+  .bul{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);flex:none;margin:7px 4px 0 5px}
   /* thu gọn mục con */
-  .tw{width:14px;height:22px;flex:none;display:grid;place-items:center;color:#8d9099;margin:0 -6px 0 -4px;border-radius:4px}
+  .tw{width:18px;height:20px;flex:none;display:grid;place-items:center;color:#8d9099;margin-left:-4px;border-radius:4px}
   .tw svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
   .tw:hover{color:#e6e8ec;background:rgba(255,255,255,.07)}
-  .tw.none{visibility:hidden;pointer-events:none}
   .group:not(.collapsed) .tw svg{transform:rotate(90deg)}
   .group.collapsed>.children{display:none}
-  .cnt{font-size:10px;color:#a9adb6;background:rgba(255,255,255,.08);border-radius:8px;padding:1px 6px;margin-top:3px;flex:none;align-self:flex-start;font-weight:600}
+  .cnt{font-size:10px;color:#a9adb6;background:rgba(255,255,255,.08);border-radius:8px;padding:1px 6px;margin:2px 0 0 -6px;flex:none;align-self:flex-start;font-weight:600}
   /* icon PNG tự thêm */
   .lk img{width:16px;height:16px;display:block;filter:grayscale(1) brightness(.8);opacity:.5;transition:filter .2s,opacity .2s}
   .lk:hover img{opacity:.8}
@@ -138,7 +131,7 @@
   .dlg input:focus{border-color:var(--neon)}
   /* ---------- team ---------- */
   /* tên team: nằm bên phải thanh tiêu đề, cạnh nút ghim */
-  .chip{display:inline-flex;align-items:center;gap:5px;height:26px;background:#2f3a33;color:var(--neon);border-radius:13px;padding:0 10px;font-size:11px;font-weight:600;max-width:160px;min-width:0;flex:0 1 auto;white-space:nowrap;align-self:center}
+  .chip{display:inline-flex;align-items:center;gap:5px;height:26px;background:#2f3a33;color:var(--neon);border-radius:13px;padding:0 9px;font-size:11px;font-weight:600;max-width:160px;margin-right:2px;min-width:0;flex:0 1 auto;white-space:nowrap;align-self:center}
   .chip #chipName{overflow:hidden;text-overflow:ellipsis}
   .chip.admin{background:#4a3d22;color:#ffd34d}
   .chip .sync{flex:none;width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none;transition:background .3s}
@@ -221,6 +214,7 @@
       <button class="ib icon" id="bBack" title="Về danh sách team" hidden><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <button class="ib icon" id="bLogout" title="Thoát chế độ Admin" hidden><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></button>
       <span class="chip" id="chip" hidden><span class="sync" id="sync"></span><span id="chipName"></span></span>
+      <button class="ib icon" id="bCfg" title="Config các nút link" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
       <button class="ib icon" id="bTop" title="Luôn nằm trên cùng: đang tắt"><svg viewBox="0 0 24 24"><path d="M9 3h6l-1 6 3.5 3.5v1.5h-11v-1.5L10 9z"/><path d="M12 14v7"/></svg></button>
       <button class="ib icon" id="bHide" title="Thu xuống khay hệ thống"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
     </div>
@@ -228,7 +222,6 @@
 
   <main class="canvas">
     <div class="wm">Created by Mondiro</div>
-    <button class="cfgb" id="bCfg" title="Config các nút link" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <div class="scroll view" id="scroll">
       <ul id="list"></ul>
       <div class="empty" id="empty" hidden>Board đang trống<br><button class="ib" id="emptyAdd">＋ Thêm đầu mục</button></div>
@@ -491,17 +484,18 @@ function rowHtml(node, isKid) {
   const n = isKid ? 0 : node.children.length;
   const lead = isKid
     ? `<span class="bul"></span>`
-    : `<button class="tw${n ? "" : " none"}" data-act="toggle" title="Thu gọn / mở mục con">${TW_SVG}</button><span class="dot ${node.enabled ? "on" : "off"}" data-act="dot" title="Bật / tắt"></span>`;
+    : `<span class="dot ${node.enabled ? "on" : "off"}" data-act="dot" title="Bật / tắt"></span>`;
   const acts = isKid
     ? `<button class="ab add" data-act="add" title="Thêm mục con bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`
     : `<button class="ab kid" data-act="kid" title="Thêm mục con">↳</button><button class="ab add" data-act="add" title="Thêm đầu mục bên dưới">+</button><button class="ab del" data-act="del" title="Xoá">−</button>`;
   const links = isKid ? "" : `<span class="links">${BUTTONS.filter(b => !b.hidden).map(b => linkBtn(node, b)).join("")}</span>`;
-  const cnt = !isKid && n && collapsed.has(node.id) ? `<span class="cnt" title="${n} mục con đang thu gọn">${n}</span>` : "";
-  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}${cnt}<span class="acts">${acts}</span>`;
+  const tw = !isKid && n ? `<button class="tw" data-act="toggle" title="Thu gọn / mở mục con">${TW_SVG}</button>` : "";
+  const cnt = tw && collapsed.has(node.id) ? `<span class="cnt" title="${n} mục con đang thu gọn">${n}</span>` : "";
+  return `${lead}<div class="txt" contenteditable="true" spellcheck="false" data-ph="${isKid ? "Mục con…" : "Đầu mục…"}"></div>${links}${tw}${cnt}<span class="acts">${acts}</span>`;
 }
 function makeRow(node, isKid, tag) {
   const el = document.createElement(tag);
-  el.className = "row" + (isKid ? " kid" : node.enabled ? "" : " off") + (isKid && node.link ? " linked" : "");
+  el.className = "row" + (isKid ? " kid" : node.enabled ? "" : " off");
   el.dataset.id = node.id;
   el.innerHTML = rowHtml(node, isKid);
   el.querySelector(".txt").innerHTML = node.html;
@@ -621,32 +615,6 @@ listEl.addEventListener("click", e => {
 });
 listEl.addEventListener("mousedown", e => { if (e.target.closest(".ab,.dot,.tw,.lk")) e.preventDefault(); });
 
-/* mục con có link: Ctrl + Click để mở; double click vào chữ để chèn / sửa link */
-listEl.addEventListener("click", e => {
-  if (!e.ctrlKey) return;
-  const row = e.target.closest(".kid.linked"); if (!row || !e.target.closest(".txt")) return;
-  const f = find(row.dataset.id); if (!f || !f.node.link) return;
-  e.preventDefault(); send("openLink", { url: f.node.link });
-}, true);
-listEl.addEventListener("dblclick", e => {
-  const row = e.target.closest(".kid"); if (!row || !e.target.closest(".txt")) return;
-  e.preventDefault();
-  editKidLink(row.dataset.id);
-});
-function editKidLink(id) {
-  const f0 = find(id); if (!f0) return;
-  const cur = f0.node.link || "";
-  const save = url => { const f = find(id); if (!f) { toast("Mục này vừa bị xoá"); return; } f.node.link = url; render(true); changed(); };
-  const buttons = [{ label: "Huỷ" }];
-  if (cur) buttons.push({ label: "Xoá link", run: () => save("") });
-  buttons.push({ label: "Lưu", cls: "primary", def: true, run: v => {
-    const url = cleanUrl(v);
-    if (!url && v.trim()) { toast("Link không hợp lệ"); return; }
-    save(url);
-  }});
-  dialog({ title: "Link cho mục con", text: plain(f0.node.html) || "(mục con trống)",
-    input: { value: cur, placeholder: "https://… hoặc D:\\Project\\..." }, buttons });
-}
 
 /* nút link: click 1 lần = mở link, double click = chèn / sửa link (chờ một chút để phân biệt) */
 let lkTimer = 0, lkLast = null;
@@ -766,7 +734,7 @@ window.addEventListener("pointerup", e => {
   cancelHold();
   if (press) {
     const p = press; press = null;
-    if (!(e.ctrlKey && p.row.classList.contains("linked"))) placeCaret(p.txt, e.clientX, e.clientY);
+    placeCaret(p.txt, e.clientX, e.clientY);
   }
   if (drag) endDrag();
 });
@@ -1282,15 +1250,11 @@ listEl.addEventListener("mouseover", e => {
   if (!row || drag) return;
   whoT = setTimeout(() => {
     const f = find(row.dataset.id); if (!f || drag) return;
-    const hasLink = !f.parent ? false : !!f.node.link;
-    if (!f.node.by && !hasLink) return;
+    if (!f.node.by) return;
     whoEl.innerHTML = "";
-    if (f.node.by) {
-      whoEl.append("Sửa bởi ");
-      const b = document.createElement("b"); b.textContent = f.node.by; whoEl.append(b);
-      if (f.node.at) whoEl.append(" · " + ago(f.node.at));
-    }
-    if (hasLink) whoEl.append((f.node.by ? "  ·  " : "") + "Ctrl+Click để mở link");
+    whoEl.append("Sửa bởi ");
+    const b = document.createElement("b"); b.textContent = f.node.by; whoEl.append(b);
+    if (f.node.at) whoEl.append(" · " + ago(f.node.at));
     const r = row.querySelector(".txt").getBoundingClientRect();
     whoEl.style.display = "block";
     whoEl.style.left = Math.max(4, Math.min(r.left, innerWidth - whoEl.offsetWidth - 4)) + "px";
