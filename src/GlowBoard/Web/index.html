@@ -52,13 +52,14 @@
   ul{list-style:none;margin:0;padding:0}
   .group{position:relative;margin-bottom:2px}
   .row{position:relative;display:flex;align-items:flex-start;gap:10px;padding:5px 8px;border-radius:7px}
-  /* chấm tròn bóng: viền tối, đáy tối hơn, vệt sáng phía trên, bóng đổ nhẹ */
-  .dot{position:relative;width:12px;height:12px;border-radius:50%;flex:none;margin-top:5px;cursor:pointer;
-       box-shadow:inset 0 0 0 1px rgba(0,0,0,.38),inset 0 -2.5px 3px rgba(0,0,0,.28),1px 1.5px 2px rgba(0,0,0,.35)}
+  /* chấm tròn bóng: viền ngoài sáng hơn ruột, vệt sáng phía trên */
+  .dot{position:relative;width:12px;height:12px;border-radius:50%;flex:none;margin-top:5px;cursor:pointer}
   .dot::after{content:"";position:absolute;left:2.5px;top:1.2px;width:7px;height:5px;border-radius:50%;
        background:linear-gradient(to bottom,rgba(255,255,255,.9),rgba(255,255,255,.18))}
-  .dot.on{background-color:var(--neon);animation:pulseOn 2.4s ease-in-out infinite}
-  .dot.off{background-color:var(--off-dark)}
+  .dot.on{background-color:var(--neon);animation:pulseOn 2.4s ease-in-out infinite;
+       box-shadow:inset 0 0 0 1.3px #c6ffd9,inset 0 -2px 3px rgba(0,60,20,.3),0 0 3px 1px rgba(120,255,165,.45)}
+  .dot.off{background-color:var(--off-dark);
+       box-shadow:inset 0 0 0 1.3px #e4e6eb,inset 0 -2px 3px rgba(0,0,0,.18),0 0 3px 1px rgba(228,230,235,.25)}
   @keyframes pulseOn{0%,100%{background-color:var(--neon)}50%{background-color:var(--neon-dark)}}
   .txt{flex:1;min-width:0;margin-right:74px;outline:none;line-height:22px;min-height:22px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text;cursor:text}
   .txt:empty::before{content:attr(data-ph);color:rgba(255,255,255,.3)}
@@ -71,6 +72,8 @@
   .group>.row .txt{min-width:60px}
   .links{display:flex;gap:3px;flex:none;margin-top:1px}
   .lk{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:rgba(255,255,255,.28);transition:color .2s,background .2s}
+  .lk-txt{font-size:10.5px;font-weight:800;letter-spacing:-.01em;padding:0 3px}
+  .lk:has(.lk-txt){width:auto}
   .lk svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .lk:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
   .lk.set{color:var(--neon)}
@@ -181,7 +184,7 @@ function sampleDoc() {
       ch("Nhấn giữ vào một dòng rồi kéo để đổi thứ tự"),
       ch("Rê chuột vào dòng để thấy nút ↳ ＋ −"),
     ]),
-    it("Các nút sau chữ: Reference, List task, Feedback GD, Feedback KCS", false, [
+    it("Các nút sau chữ: Reference, List task, Feedback GD, Miro", false, [
       ch("Double click vào nút để chèn link"),
       ch("Click 1 lần để mở link"),
     ]),
@@ -273,19 +276,19 @@ const listEl = $("#list");
 const CHECK_SVG = '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg>';
 
 const ICON_REF = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M7 5v4M12 5v4M17 5v4"/><path d="M10.5 12.2v4.6l4-2.3z" fill="currentColor"/></svg>';
-const ICON_TASK = '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5"/><path d="M8.5 10l1.3 1.3L12 9M8.5 15.5l1.3 1.3L12 14.5M14 10.3h2.5M14 15.8h2.5"/></svg>';
+const ICON_TASK = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 6.5" stroke-width="3"/></svg>';
 const ICON_GD = '<svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 9.5h3M10 8v3"/><circle cx="14.5" cy="8.6" r=".9" fill="currentColor" stroke="none"/><circle cx="15.8" cy="10.8" r=".9" fill="currentColor" stroke="none"/></svg>';
-const ICON_KCS = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3L20.5 20.5"/><path d="M7.8 10.6l1.9 1.9 3.3-3.6"/></svg>';
+const ICON_KCS = '<span class="lk-txt">Miro</span>';
 /* các nút link sau chữ đầu mục, theo thứ tự hiển thị */
 const LINKS = {
   ref:  { key: "refLink",  icon: ICON_REF,  name: "Reference animation" },
   task: { key: "taskLink", icon: ICON_TASK, name: "List task" },
   gd:   { key: "gdLink",   icon: ICON_GD,   name: "Feedback Game Designer" },
-  kcs:  { key: "kcsLink",  icon: ICON_KCS,  name: "Feedback KCS" },
+  kcs:  { key: "kcsLink",  icon: ICON_KCS,  name: "Miro", tip: "Link Miro" },
 };
 function linkBtn(node, kind) {
   const L = LINKS[kind], url = node[L.key];
-  const title = `${L.name}${url ? "" : " (chưa có link)"}\nClick: mở link · Double click: chèn / sửa link`;
+  const title = `${L.tip || L.name}${url ? "" : " (chưa có link)"}\nClick: mở link · Double click: chèn / sửa link`;
   return `<button class="lk${url ? " set" : ""}" data-act="link" data-kind="${kind}" title="${title}">${L.icon}</button>`;
 }
 function rowHtml(node, isKid) {
