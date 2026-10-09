@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Members Popup Layout</title>
+<style>
+:root{--bg:#45484f;--head:#383b41;--line:#555963;--btn:#50545d;--neon:#39ff7a;--red:#ff3b3b;--mute:#a9adb6;--off:#9ea2ac}
+*{box-sizing:border-box}
+body{margin:0;background:#2a2c31;color:#fff;font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:20px 16px}
+h1{font-size:18px;margin:0 0 4px}.lead{color:var(--mute);font-size:12.5px;margin:0 0 18px}
+.wrap{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.cap{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffd34d;margin:0 0 8px}
+.win{width:400px;flex:none;background:var(--bg);border:5px solid #2e3035;border-radius:10px;overflow:hidden;height:500px;position:relative}
+.head{display:flex;align-items:center;gap:10px;padding:9px 10px 8px 12px;background:var(--head);border-bottom:1px solid var(--line)}
+.logo{width:30px;height:30px;border:2px solid var(--neon);border-radius:8px;background:#2a2c31;flex:none}
+.t{font-size:16px;font-weight:700;white-space:nowrap}.t .m{color:var(--red)}.d{font-size:11px;color:var(--mute)}
+.r{margin-left:auto;display:flex;gap:3px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:5px;height:26px;background:#2f3a33;color:var(--neon);border-radius:13px;padding:0 9px;font-size:11px;font-weight:600;white-space:nowrap;outline:2px solid rgba(57,255,122,.45)}
+.chip i{width:6px;height:6px;border-radius:50%;background:var(--neon)}
+.ib{width:26px;height:26px;border-radius:6px;background:var(--btn)}
+.board{padding:10px 18px;opacity:.35}
+.board div{height:12px;border-radius:6px;background:#6b6f78;margin:12px 0}
+.board div.s{width:55%;margin-left:30px;background:#5a5e66}
+.pop{position:absolute;right:62px;top:46px;width:250px;background:#363940;border:1px solid #5a5e68;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.5);padding:10px 0 6px;z-index:5}
+.pop:before{content:"";position:absolute;top:-6px;right:44px;width:10px;height:10px;background:#363940;border-left:1px solid #5a5e68;border-top:1px solid #5a5e68;transform:rotate(45deg)}
+.ph{display:flex;justify-content:space-between;align-items:baseline;padding:0 12px 8px;border-bottom:1px solid #474b55}
+.ph b{font-size:13px}.ph span{font-size:11px;color:var(--mute)}
+.mb{display:flex;align-items:center;gap:9px;padding:6px 12px}
+.av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#1d1f23;flex:none;position:relative}
+.av .st{position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%;border:2px solid #363940;background:#7d818a}
+.av .st.on{background:var(--neon)}
+.nm{flex:1;min-width:0}.nm div{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm small{display:block;font-size:10.5px;color:var(--mute)}.nm small.on{color:var(--neon)}
+.you{font-size:9.5px;color:#1d1f23;background:#a9adb6;border-radius:6px;padding:0 5px;margin-left:4px;font-weight:700}
+.sec{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8d9099;padding:6px 12px 2px}
+.foot{font-size:10.5px;color:var(--mute);padding:6px 12px 2px;border-top:1px solid #474b55;margin-top:4px}
+.notes{max-width:420px;flex:1 1 300px;font-size:12.5px;color:#cfd2d8;line-height:1.6}
+.notes b{color:#fff}
+</style></head><body>
+<h1>Phác layout – Danh sách thành viên</h1>
+<p class="lead">Bấm vào tên team (viền sáng) → bảng nhỏ xổ xuống ngay dưới. Bấm ra ngoài hoặc bấm lại tên team để đóng.</p>
+<div class="wrap">
+<div style="flex:none"><p class="cap">Board khi mở danh sách</p>
+<div class="win">
+  <div class="head"><div class="logo"></div><div><div class="t"><span class="m">Mondiro</span> GlowBoard</div><div class="d">Keep what you want</div></div>
+    <div class="r"><span class="chip"><i></i>Anim Milo</span><span class="ib"></span><span class="ib"></span><span class="ib"></span></div></div>
+  <div class="board"><div></div><div class="s"></div><div></div><div class="s"></div><div class="s"></div><div></div><div class="s"></div><div></div></div>
+  <div class="pop">
+    <div class="ph"><b>Anim Milo</b><span>5 thành viên · 3 online</span></div>
+    <div class="sec">Đang online</div>
+    <div class="mb"><span class="av" style="background:#7fd6ff">M<span class="st on"></span></span><div class="nm"><div>Mondiro <span class="you">BẠN</span></div><small class="on">Đang online</small></div></div>
+    <div class="mb"><span class="av" style="background:#ffc86b">L<span class="st on"></span></span><div class="nm"><div>Lan</div><small class="on">Đang online</small></div></div>
+    <div class="mb"><span class="av" style="background:#b9a2ff">T<span class="st on"></span></span><div class="nm"><div>Tuấn</div><small class="on">Đang online</small></div></div>
+    <div class="sec">Offline</div>
+    <div class="mb"><span class="av" style="background:#8ee6a8">M<span class="st"></span></span><div class="nm"><div>Minh</div><small>Hoạt động 25 phút trước</small></div></div>
+    <div class="mb"><span class="av" style="background:#ff9db0">H<span class="st"></span></span><div class="nm"><div>Hà</div><small>Hoạt động hôm qua</small></div></div>
+    <div class="foot">Online = đang mở GlowBoard (cập nhật mỗi ~2 phút)</div>
+  </div>
+</div></div>
+<div class="notes"><p class="cap">Ghi chú</p>
+• Mỗi người hiện <b>chữ cái đầu tên</b> trong vòng tròn màu (màu cố định theo tên) + <b>tên hiển thị</b> họ đã nhập khi vào team.<br>
+• Chấm nhỏ ở avatar: <b style="color:#39ff7a">xanh</b> = đang mở app, <b>xám</b> = offline, kèm “Hoạt động … trước”.<br>
+• Người đang online xếp lên trước, rồi đến người offline (mới hoạt động gần nhất trước).<br>
+• Dòng của chính bạn có nhãn <b>BẠN</b>.<br>
+• Chỉ hiện người đang dùng <b>mã hiện tại</b> của team — đổi mã thì ai chưa nhập mã mới sẽ tự biến khỏi danh sách.<br>
+• Admin cũng xem được danh sách này khi “Mở board” một team.<br>
+• Ai cũng xem được danh sách (vì là team nội bộ); chỉ xem, không có nút đá / sửa.<br><br>
+<b>Cần làm thêm khi build:</b> sửa nhẹ luật bảo mật để thành viên xem được danh sách team mình → bạn dán lại <code>firestore.rules</code> 1 lần như lần trước.
+</div>
+</div>
+</body></html>
