@@ -161,6 +161,9 @@
   .mpop .you{font-size:9.5px;color:#1d1f23;background:#a9adb6;border-radius:6px;padding:0 5px;margin-left:4px;font-weight:700;vertical-align:1px}
   .mpop .foot{font-size:10.5px;color:var(--mute);padding:6px 12px 2px;border-top:1px solid #474b55;margin-top:4px}
   .mpop .none{font-size:12px;color:var(--mute);padding:10px 12px}
+  .mpop .rm{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;color:#9a9ea7;font-size:14px;line-height:1;opacity:0;transition:opacity .2s,background .2s}
+  .mpop .mb:hover .rm{opacity:1}
+  .mpop .rm:hover{background:#7a3434;color:#fff}
   .chip.admin{background:#4a3d22;color:#ffd34d}
   .chip .sync{flex:none;width:6px;height:6px;border-radius:50%;background:var(--neon);flex:none;transition:background .3s}
   .chip .sync.off{background:#8a8e97}
@@ -1324,15 +1327,26 @@ function placeMembers() {
   mpop.style.left = Math.max(6, Math.min(r.left + r.width / 2 - 125, innerWidth - 256)) + "px";
 }
 window.addEventListener("resize", () => { if (mpop.classList.contains("show")) placeMembers(); });
-document.addEventListener("mousedown", e => { if (mpop.classList.contains("show") && !e.target.closest("#mpop,#chip")) closeMembers(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && mpop.classList.contains("show")) closeMembers(); });
+document.addEventListener("mousedown", e => { if (mpop.classList.contains("show") && !e.target.closest("#mpop,#chip,#veil")) closeMembers(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && mpop.classList.contains("show") && !veil.classList.contains("show")) closeMembers(); });
 function renderMembers() {
   if (!mpop.classList.contains("show")) return;
   const now = Date.now(), me = S.user && S.user.uid;
-  const list = members.map(m => {
+  // cùng một tên (không phân biệt hoa thường) = cùng một người → gộp thành 1 dòng
+  const groups = new Map();
+  for (const m of members) {
+    const name = String(m.name || "?").trim() || "?";
+    const key = name.toLowerCase();
     const seen = Math.max(tsMs(m.lastSeen), tsMs(m.joinedAt));
-    return { uid: m.uid, name: String(m.name || "?"), seen, online: m.uid === me || now - seen < ONLINE_MS };
-  }).sort((a, b) => (b.online - a.online) || ((b.uid === me) - (a.uid === me)) || (b.seen - a.seen) || a.name.localeCompare(b.name));
+    const online = m.uid === me || now - seen < ONLINE_MS;
+    const g = groups.get(key) || { uid: m.uid, name, seen: 0, online: false, uids: [], offUids: [] };
+    g.uids.push(m.uid); if (!online) g.offUids.push(m.uid);
+    if (m.uid === me) g.uid = me;
+    if (seen > g.seen) { g.seen = seen; if (g.uid !== me) g.uid = m.uid; g.name = name; }
+    g.online = g.online || online;
+    groups.set(key, g);
+  }
+  const list = [...groups.values()].sort((a, b) => (b.online - a.online) || ((b.uid === me) - (a.uid === me)) || (b.seen - a.seen) || a.name.localeCompare(b.name));
   const on = list.filter(x => x.online), off = list.filter(x => !x.online);
   mpop.innerHTML = "";
   const head = document.createElement("div"); head.className = "ph";
@@ -1353,11 +1367,29 @@ function renderMembers() {
       if (m.uid === me) { const y = document.createElement("span"); y.className = "you"; y.textContent = "BẠN"; n1.appendChild(y); }
       const n2 = document.createElement("small");
       if (m.online) { n2.className = "on"; n2.textContent = "Đang online"; } else n2.textContent = m.seen ? "Hoạt động " + ago(m.seen) : "Chưa hoạt động";
-      nm.append(n1, n2); row.append(av, nm); mpop.appendChild(row);
+      nm.append(n1, n2); row.append(av, nm);
+      // Admin dọn các dòng offline thừa (máy cũ / phiên cũ)
+      if (S.admin && m.offUids.length) {
+        const rm = document.createElement("button"); rm.className = "rm"; rm.textContent = "×";
+        rm.title = "Xoá khỏi danh sách";
+        rm.onclick = () => removeMembers(m.name, m.offUids, m.online);
+        row.appendChild(rm);
+      }
+      mpop.appendChild(row);
     }
   };
   section("Đang online", on); section("Offline", off);
   const f = document.createElement("div"); f.className = "foot"; f.textContent = "Online = đang mở GlowBoard (cập nhật mỗi ~2 phút)"; mpop.appendChild(f);
+}
+function removeMembers(name, uids, stillOnline) {
+  dialog({ title: "Xoá " + name + " khỏi danh sách?",
+    text: (stillOnline ? "Chỉ xoá các phiên cũ đang offline của " + name + ". " : "") +
+      "Nếu máy đó vẫn còn dùng, họ sẽ phải nhập lại mã team.",
+    buttons: [{ label: "Huỷ" }, { label: "Xoá", cls: "danger", def: true, run: async () => {
+      const b = FB.writeBatch(FB_DB);
+      uids.forEach(u => b.delete(FB.doc(FB_DB, "teams", S.teamId, "members", u)));
+      try { await b.commit(); toast("Đã xoá khỏi danh sách"); } catch (err) { toast(errText(err)); }
+    } }] });
 }
 /* báo "còn đang mở app" để cả team thấy mình online */
 setInterval(() => {
@@ -1407,6 +1439,11 @@ $("#loginBack").onclick = () => startMember();
 $("#lGo").onclick = async () => {
   $("#lGo").disabled = true; $("#lErr").textContent = "";
   try {
+    // máy này đang là thành viên → xoá dòng thành viên của phiên hiện tại, để lúc thoát Admin
+    // vào lại team không bị thêm một tên trùng
+    const t = store.get("teamId");
+    if (S.user && S.user.isAnonymous && t)
+      await withTimeout(FB.deleteDoc(FB.doc(FB_DB, "teams", t, "members", S.user.uid)), 5000).catch(() => {});
     stopTeam();
     const cred = await FB.signInWithEmailAndPassword(FB_AUTH, $("#lEmail").value.trim(), $("#lPass").value);
     $("#lPass").value = "";

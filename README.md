@@ -15,7 +15,7 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 - Mọi người trong team thấy thay đổi của nhau gần như ngay lập tức. Mất mạng vẫn ghi được, có mạng lại tự đồng bộ.
 - Rê chuột vào một dòng ~0.7 giây để xem **"Sửa bởi … · … trước"**.
 - Chấm nhỏ cạnh tên team: xanh = đã đồng bộ, xám = đang offline.
-- **Bấm vào tên team** để xem danh sách thành viên: tên, ai đang online (đang mở GlowBoard), ai offline và hoạt động lần cuối khi nào.
+- **Bấm vào tên team** để xem danh sách thành viên: tên, ai đang online (đang mở GlowBoard), ai offline và hoạt động lần cuối khi nào. Tên trùng nhau được gộp thành 1 dòng; Admin có nút **×** để xoá các dòng offline thừa (máy / phiên cũ).
 - Khay hệ thống → **Rời team / nhập mã khác**.
 
 ### Admin (quản lý)
