@@ -37,7 +37,8 @@ service cloud.firestore {
       // Mỗi máy trong team (tên hiển thị + mã đã dùng để vào)
       match /members/{uid} {
         allow get: if isAdmin() || (request.auth != null && request.auth.uid == uid);
-        allow list: if isAdmin();
+        // Thành viên (mã đúng, team không khóa) xem được danh sách người trong team mình
+        allow list: if isAdmin() || isMember(t);
         allow create, update: if request.auth != null && request.auth.uid == uid
           && request.resource.data.keys().hasOnly(["name", "code", "joinedAt", "lastSeen"])
           && request.resource.data.name is string

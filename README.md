@@ -15,6 +15,7 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 - Mọi người trong team thấy thay đổi của nhau gần như ngay lập tức. Mất mạng vẫn ghi được, có mạng lại tự đồng bộ.
 - Rê chuột vào một dòng ~0.7 giây để xem **"Sửa bởi … · … trước"**.
 - Chấm nhỏ cạnh tên team: xanh = đã đồng bộ, xám = đang offline.
+- **Bấm vào tên team** để xem danh sách thành viên: tên, ai đang online (đang mở GlowBoard), ai offline và hoạt động lần cuối khi nào.
 - Khay hệ thống → **Rời team / nhập mã khác**.
 
 ### Admin (quản lý)
@@ -33,7 +34,7 @@ Board ghi chú dạng widget nằm trên desktop Windows, chạy ở khay hệ t
 | Đổi thứ tự | Nhấn giữ vào dòng rồi kéo lên/xuống (dòng đang gõ chữ: giữ ~0.3 giây rồi kéo) |
 | Gõ chữ | Click vào dòng. Đầu mục in đậm màu xanh dạ quang, mục con chữ trắng thường |
 | Thêm / xoá dòng | Rê chuột vào dòng → nút **+** / **−** ở cuối dòng (xoá sẽ hỏi lại). Board trống: nút **＋ Thêm đầu mục** |
-| Thêm mục con | Nút **↳** ở cuối dòng đầu mục |
+| Thêm mục con (có ô check) | Nút **↳** ở cuối dòng đầu mục. Tick ô check → chữ gạch ngang |
 | Thu gọn / mở mục con | Mũi tên **⌄ / ›** ở sau các nút link của đầu mục (lưu riêng trên máy bạn; khi thu gọn sẽ hiện số mục con) |
 | Nút link sau chữ đầu mục | **click** = mở link, **double click** = chèn / sửa link (nút sáng khi đã có link) |
 | Config các nút link | Nút ⚙ trên thanh tiêu đề (cạnh nút ghim): thêm nút mới với icon PNG, sửa tooltip, ẩn / hiện, xoá. 4 nút mặc định (Reference, List task, Feedback GD, Miro) chỉ ẩn / hiện được. Áp dụng chung cả team |
