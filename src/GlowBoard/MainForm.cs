@@ -39,6 +39,7 @@ namespace GlowBoard
         private bool _peek;            // tạm thời cho board nổi lên trên các cửa sổ khác
         private bool _onTop;           // tuỳ chọn: luôn nằm trên mọi cửa sổ
         private ToolStripMenuItem _onTopItem;
+        private ToolStripMenuItem _notifyItem;
         private bool _quitting;
         private bool _pageLoaded;
 
@@ -73,6 +74,7 @@ namespace GlowBoard
 
             _tray = new NotifyIcon { Icon = LoadAppIcon(SystemInformation.SmallIconSize), Text = AppTitle, Visible = true, ContextMenuStrip = BuildTrayMenu() };
             _tray.MouseClick += (s, e) => { if (e.Button == MouseButtons.Left) ShowBoard(); };
+            _tray.BalloonTipClicked += (s, e) => ShowBoard();
 
             ResizeEnd += (s, e) => SaveBounds();
 
@@ -134,6 +136,12 @@ namespace GlowBoard
             m.Items.Add("Chế độ Admin…", null, (s, e) => { ShowBoard(); Post(new { type = "admin" }); });
             m.Items.Add("Rời team / nhập mã khác", null, (s, e) => { ShowBoard(); Post(new { type = "leave" }); });
             m.Items.Add(new ToolStripSeparator());
+            _notifyItem = new ToolStripMenuItem("Thông báo khi team thay đổi", null, (s, e) =>
+            {
+                _settings.Set("Notify", NotifyOn ? 0 : 1); _settings.Save();
+                _notifyItem.Checked = NotifyOn;
+            }) { Checked = NotifyOn };
+            m.Items.Add(_notifyItem);
             _onTopItem = new ToolStripMenuItem("Luôn nằm trên cùng", null, (s, e) => SetOnTop(!_onTop)) { Checked = _onTop };
             m.Items.Add(_onTopItem);
             _autoStartItem = new ToolStripMenuItem("Khởi động cùng Windows", null, (s, e) => ToggleAutoStart()) { Checked = IsAutoStart() };
@@ -146,6 +154,10 @@ namespace GlowBoard
             m.Opening += (s, e) => _autoStartItem.Checked = IsAutoStart();
             return m;
         }
+
+        private bool NotifyOn => _settings.GetInt("Notify", 1) != 0;
+
+        private static string Truncate(string s, int n) => s.Length <= n ? s : s.Substring(0, n - 1) + "…";
 
         private static bool IsAutoStart()
         {
@@ -440,6 +452,11 @@ namespace GlowBoard
                     break;
                 case "getLegacy": Post(new { type = "legacy", text = ReadLegacyBoard() }); break;
                 case "hide": HideBoard(); break;
+                case "notify":
+                    // Thông báo Windows khi người khác thay đổi board (đã gom 2 phút ở phía giao diện)
+                    if (NotifyOn)
+                        _tray.ShowBalloonTip(8000, Truncate(Str("title") ?? AppTitle, 63), Truncate(Str("text") ?? "", 250), ToolTipIcon.Info);
+                    break;
                 case "toggleTop": SetOnTop(!_onTop); break;
                 case "openLink": OpenLink(Str("url")); break;
                 case "drag":

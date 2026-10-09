@@ -456,6 +456,7 @@ function flush() {
   for (const id of Object.keys(synced)) {
     if (alive.has(id)) continue;
     batch.delete(FB.doc(FB_DB, "teams", S.teamId, "items", id));
+    localDeleted.add(id);
     delete synced[id]; n++;
   }
   if (n) batch.commit().catch(err => onSyncError(err));
@@ -981,6 +982,7 @@ function browserHost(msg) {
     case "hide": toast("(Bản xem thử) Trong app sẽ thu xuống khay hệ thống"); break;
     case "toggleTop": { const on = !$("#bTop").classList.contains("on"); setTimeout(() => onHost({ type: "onTop", on }), 0); break; }
     case "getLegacy": setTimeout(() => onHost({ type: "legacy", text: null }), 0); break;
+    case "notify": (window.__notes = window.__notes || []).push(msg); break;
   }
 }
 
@@ -1111,6 +1113,7 @@ function stopTeam() {
   S.unsubItems = S.unsubTeam = S.unsubButtons = null;
   BUTTONS = defaultButtons(); collapsed = new Set();
   S.teamId = null; S.serverItems = {}; synced = {}; doc = { items: [] }; renderedSig = "";
+  S.baseline = false; resetNotify();
   listEl.innerHTML = "";
 }
 
@@ -1151,6 +1154,8 @@ function applySnapshot(snap) {
   const act = document.activeElement && document.activeElement.closest ? document.activeElement.closest(".txt") : null;
   const actId = act ? act.closest(".row").dataset.id : null;
   const items = [];
+  const prevServer = S.serverItems, detect = S.baseline && !snap.metadata.fromCache;
+  if (!snap.metadata.fromCache) S.baseline = true;     // lần đồng bộ đầu tiên chỉ làm mốc, không báo
   S.serverItems = {}; synced = {};
   snap.forEach(d => {
     const x = d.data();
@@ -1163,9 +1168,19 @@ function applySnapshot(snap) {
     it.xlinks = {};
     if (x.xlinks && typeof x.xlinks === "object") for (const k of Object.keys(x.xlinks)) { const u = cleanUrl(String(x.xlinks[k] || "")); if (u) it.xlinks[k] = u; }
     items.push(it);
+    // thay đổi đến từ máy khác (không phải thay đổi đang chờ ghi của máy này) → gom lại để thông báo
+    if (detect && !d.metadata.hasPendingWrites) {
+      const old = prevServer[it.id];
+      if (!old || content(old) !== content(it)) noteRemote(lastEditor(it), it.id, plain(it.html), !old ? "add" : "edit");
+    }
     S.serverItems[it.id] = JSON.parse(JSON.stringify(it));
     synced[it.id] = content(it);
   });
+  if (detect) for (const id of Object.keys(prevServer)) {
+    if (S.serverItems[id]) continue;
+    if (localDeleted.has(id)) { localDeleted.delete(id); continue; }
+    noteRemote("", id, plain(prevServer[id].html), "del");
+  }
   // dòng đang gõ: giữ chữ đang gõ trên máy này
   if (actId) {
     const local = sanitize(act.innerHTML);
@@ -1396,6 +1411,42 @@ setInterval(() => {
   if (!S.teamId || S.admin || !S.user || !S.code || !$("#scroll").classList.contains("show")) return;
   FB.updateDoc(FB.doc(FB_DB, "teams", S.teamId, "members", S.user.uid), { lastSeen: FB.serverTimestamp() }).catch(() => {});
 }, HEARTBEAT_MS);
+
+/* ---------- thông báo khi người khác thay đổi board ----------
+   Gom các thay đổi lại; chỉ báo khi đã yên 2 phút không có thay đổi mới. */
+const NOTIFY_DELAY = +((/[?&]nd=(\d+)/.exec(location.search) || [])[1]) || 2 * 60 * 1000;
+const localDeleted = new Set();
+let NT = null;
+function resetNotify() { if (NT) clearTimeout(NT.timer); NT = null; }
+function lastEditor(it) {
+  let by = it.by, at = it.at || 0;
+  for (const c of it.children) if ((c.at || 0) > at && c.by) { by = c.by; at = c.at; }
+  return by || "";
+}
+function noteRemote(editor, id, title, kind) {
+  if (!NT) NT = { timer: 0, editors: new Set(), items: new Map(), team: S.teamName };
+  if (editor) NT.editors.add(editor);
+  // gom theo từng đầu mục: giữ tên mới nhất; mục vừa thêm rồi sửa vẫn tính là "thêm"
+  const prev = NT.items.get(id);
+  if (prev && prev.kind === "add" && kind === "del") NT.items.delete(id);       // thêm rồi xoá luôn → bỏ qua
+  else NT.items.set(id, { title: title || (prev && prev.title) || "(dòng trống)", kind: prev && prev.kind === "add" && kind === "edit" ? "add" : kind });
+  clearTimeout(NT.timer);
+  NT.timer = setTimeout(fireNotify, NOTIFY_DELAY);
+}
+function fireNotify() {
+  const n = NT; NT = null;
+  if (!n || !n.items.size || !S.teamId) return;
+  const who = n.editors.size ? [...n.editors].slice(0, 3).join(", ") + (n.editors.size > 3 ? " và " + (n.editors.size - 3) + " người khác" : "") : "Có người";
+  const vals = [...n.items.values()];
+  const names = vals.map(v => v.title.length > 32 ? v.title.slice(0, 31) + "…" : v.title);
+  const kinds = vals.map(v => v.kind);
+  const verb = kinds.every(k => k === "del") ? "đã xoá" : kinds.every(k => k === "add") ? "đã thêm" : "đã cập nhật";
+  const list = names.slice(0, 3).join(", ") + (names.length > 3 ? " và " + (names.length - 3) + " mục khác" : "");
+  const title = "GlowBoard · " + (S.teamName || n.team || "Team");
+  const text = `${who} ${verb} ${names.length} mục: ${list}`;
+  if (document.hasFocus() && $("#scroll").classList.contains("show")) toast(text);   // đang nhìn board → chỉ báo nhẹ
+  else send("notify", { title, text });
+}
 
 /* ---------- ai sửa: rê chuột vào dòng ---------- */
 const whoEl = $("#who");
